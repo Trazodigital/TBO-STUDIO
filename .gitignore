@@ -1,0 +1,5 @@
+# The ASPICE Agent's local files and plugins: never committed.
+.qf/
+.agents/
+.claude/
+.archify/

@@ -1,0 +1,6 @@
+# A change to the gates, the framework pin or the architecture needs a person's
+# approval (SUP.1 BP1; verify_delivery_reviewed_gate); where the host supports
+# code owners, it asks them to review.
+/.github/workflows/quality_gates.yml @MFei8ht
+/.gitmodules @MFei8ht
+/docs/architecture/ @MFei8ht
