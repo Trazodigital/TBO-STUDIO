@@ -71,6 +71,25 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
+No findings for v4.0.0 (71110564c658ba39fd255e9f5368c0d16ffe7e60)
+in the local configuration migration checked on 2026-11-01.
+
+Scope: replaced `review.sample_every` with the confirmed `review.people`,
+added `review.architect` and `customer`, and copied both GitHub workflow
+templates from the pinned v4.0.0 release. No existing checkpoint approvals,
+diagrams, requirements or product code needed conversion. Historical findings
+FB-1 and FB-2 below are preserved; this line does not close them.
+
+Verification run with `/usr/bin/python3 -B`: `read_config_tool.py --root .`
+returned `ok: true` with no problems, and `resolve_stage_tool.py --root .
+--check` exited 0 with no failing findings. Stage 1 remains in progress with
+`NO_DIAGRAMS` and `NO_WISHES`; no product stage was completed or approved.
+Host-backed integrity and delivery-review checks were not run (`no_host`),
+and later-stage gates were not run (`stage_not_reached`). These checks were
+run before committing the migration; no push or GitHub Actions execution was
+performed. Checks that read the committed range must be repeated after the
+authorized commit and in CI.
+
 ### FB-2 — Bootstrap omits the release accounting required by its feedback gate
 
 - **Date:** 2026-10-21

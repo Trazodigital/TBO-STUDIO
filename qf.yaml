@@ -36,7 +36,10 @@ slots:
 review:
   agents:
   - aspice-reviewer-bot
-  sample_every: 5
+  people:
+  - MFei8ht
+  architect: MFei8ht
+customer: TBO
 urgent_approvers:
 - MFei8ht
 change_approvers:
