@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Voz y actualización compartida",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      1030
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live"
+    },
+    {
+      "id": "grafana-faro",
+      "type": "external",
+      "label": "Grafana Faro"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180.0,
+      "label": "Habla: WSS activo; orbe escuchando (listening)",
+      "variant": "default"
+    },
+    {
+      "id": "step-2",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 208.5,
+      "label": "voice-session-channel (WSS): audio del visitante",
+      "variant": "default"
+    },
+    {
+      "id": "step-3",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 237.0,
+      "label": "Voz y/o toolCall: llenar_campo(id, campo, valor)",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 303.5,
+      "label": "Sin edición manual: guarda normalizado y refleja dato",
+      "variant": "return",
+      "note": "Valor normalizado y error limpio; si es catálogo, apila etiqueta humana y cierra selector desplegable de opciones (GlassSelect) si estaba abierto."
+    },
+    {
+      "id": "step-5",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 332.0,
+      "label": "Sin conflicto: toolResponse(id, ok)",
+      "variant": "return"
+    },
+    {
+      "id": "step-6",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 360.5,
+      "label": "Con edición manual: pide confirmar sustitución",
+      "variant": "return"
+    },
+    {
+      "id": "step-7",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 389.0,
+      "label": "Acepta o rechaza la sustitución",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 417.5,
+      "label": "Si acepta: actualiza campo y brief; limpia error",
+      "variant": "return",
+      "note": "Valor normalizado y error limpio; si es catálogo, apila etiqueta humana y cierra GlassSelect si estaba abierto."
+    },
+    {
+      "id": "step-9",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 446.0,
+      "label": "Si acepta: toolResponse(id, ok)",
+      "variant": "return"
+    },
+    {
+      "id": "step-10",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 474.5,
+      "label": "Si rechaza: conserva edición manual intacta",
+      "variant": "return"
+    },
+    {
+      "id": "step-11",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 503.0,
+      "label": "Si rechaza: toolResponse(id, rejected)",
+      "variant": "return"
+    },
+    {
+      "id": "step-12",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 569.5,
+      "label": "Campo/valor inválido: no cambia datos",
+      "variant": "return"
+    },
+    {
+      "id": "step-13",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 598.0,
+      "label": "WSS activo: toolResponse(id, error)",
+      "variant": "return"
+    },
+    {
+      "id": "step-14",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 626.5,
+      "label": "toolCall tardío (sesión cerrada / revisión / pending)",
+      "variant": "default",
+      "note": "Sin cola; no responde por socket cerrado ni por una sesión nueva. Durante TU BRIEF (resumen previo al envío)/pending se cierra la voz y no se aplican llamadas tardías."
+    },
+    {
+      "id": "late-call-discard",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 656.5,
+      "label": "Descarta sin mutar ni encolar; conserva brief intacto",
+      "variant": "return"
+    },
+    {
+      "id": "step-15",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 751.0,
+      "label": "Alternativa: caída WSS / error de cuota",
+      "variant": "default"
+    },
+    {
+      "id": "step-16",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 779.5,
+      "label": "Alternativa: apaga voz manualmente",
+      "variant": "default"
+    },
+    {
+      "id": "step-17",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 808.0,
+      "label": "Cierra WSS si existe",
+      "variant": "default"
+    },
+    {
+      "id": "step-18",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 836.5,
+      "label": "Micrófono/audio off; orbe en reposo (solving); datos y manual disponibles",
+      "variant": "return",
+      "note": "Cerrar voz también cancela cualquier confirmación de conflicto pendiente conservando el dato manual; no se aplica una aceptación tardía."
+    },
+    {
+      "id": "step-19",
+      "from": "frontend",
+      "to": "grafana-faro",
+      "y": 865.0,
+      "label": "browser-telemetry-sink: sin PII/audio; best-effort",
+      "variant": "dashed"
+    },
+    {
+      "id": "step-20",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 893.5,
+      "label": "Para volver a voz: nueva pulsación explícita",
+      "variant": "default"
+    }
+  ],
+  "segments": [
+    {
+      "from": 151.5,
+      "to": 256.0,
+      "label": "1 · Audio y recepción de llenar_campo(id, campo, valor)"
+    },
+    {
+      "from": 279.75,
+      "to": 522.0,
+      "label": "2 · Rama A: dato válido en captura activa — sin conflicto / confirmar edición manual"
+    },
+    {
+      "from": 545.75,
+      "to": 703.5,
+      "label": "3 · Rama B: inválido / sesión cerrada / revisión o envío"
+    },
+    {
+      "from": 727.25,
+      "to": 912.5,
+      "label": "4 · Rama C: fallo, desconexión o apagado manual"
+    }
+  ]
+}

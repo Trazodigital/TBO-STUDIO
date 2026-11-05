@@ -1,0 +1,74 @@
+diagram: preguntas-proyecto
+invariants:
+- id: INV-1
+  statement: Las cuatro preguntas son pasos progresivos con un selector desplegable de opciones (GlassSelect) con catálogo cerrado, no entradas libres ni una validación en bloque al final; sólo se presenta una pregunta activa y las anteriores confirmadas quedan apiladas encima.
+  constrains:
+  - step-1
+  - step-9
+  - step-11
+  - step-13
+  - step-15
+- id: INV-2
+  statement: GlassSelect usa combobox/listbox y abre con clic, Enter, Espacio o ArrowDown; sus flechas desplazan opciones sin wrap y Escape o mousedown fuera cierra sin cambiar pregunta ni estado ni avanzar.
+  constrains:
+  - step-2
+  - step-3
+  - step-4
+- id: INV-3
+  statement: Seleccionar una opción del catálogo mediante clic o Enter guarda su código interno en estado y su etiqueta humana en una fila compacta y auto-avanza inmediatamente sin botón Continuar ni segunda confirmación.
+  constrains:
+  - step-5
+  - step-6
+- id: INV-4
+  statement: Las filas previas muestran etiquetas y valores humanos con ellipsis al 55% sólo visual; no se recorta el código ni el dato completo en estado y se mantienen las respuestas ya confirmadas.
+  constrains:
+  - step-1
+  - step-6
+- id: INV-5
+  statement: Prefiero no decir / Siguiente conserva el campo como string vacío "", mantiene respuestas previas y avanza sin añadir fila compacta; sólo las respondidas se apilan sobre la pregunta activa y Sin especificar se muestra al llegar a la vista de resumen previo al envío (TU BRIEF).
+  constrains:
+  - step-7
+  - step-8
+- id: INV-6
+  statement: Cada pregunta recorre la interacción común del segmento 1 y elige exactamente la rama 2 o 3; no es obligatorio cerrar, seleccionar y omitir en cada pregunta, y abrir o cerrar por sí solo nunca avanza.
+  constrains:
+  - step-1
+  - step-4
+  - step-6
+  - step-8
+- id: INV-7
+  statement: Los catálogos exactos suministrados por el cliente son projectType = landing | ecommerce | webapp | redesign | automation | other; budget = lt10k | 10to20k | 20to30k | quote; timeline = urgent | 1to3 | 3to6 | flexible; industry = retail | health | education | realestate | tech | services | other.
+  constrains:
+  - step-9
+  - step-11
+  - step-13
+  - step-15
+- id: INV-8
+  statement: El orden es P1 projectType, P2 budget, P3 timeline y P4 industry; completar u omitir P4 presenta ¿Algo más que quieras contarnos? para message y entra en mensaje-brief.
+  constrains:
+  - step-9
+  - step-11
+  - step-13
+  - step-15
+  - step-16
+  - step-17
+- id: INV-9
+  statement: Una llamada externa o de voz llenar_campo con valor fuera del catálogo del campo se rechaza inmediatamente sin mutar formulario ni brief; si sesión/canal siguen activos se responde error correlacionado, manteniendo la política de rechazo de sesiones cerradas y de conflicto manual.
+  constrains:
+  - frontend
+  - step-6
+- id: INV-10
+  statement: La selección o la omisión no inicia envío de solicitud ni precisa Gemini; las reglas de bloqueo IA durante revisión/envío siguen vigentes.
+  constrains:
+  - step-5
+  - step-7
+  - step-17
+- id: INV-11
+  statement: Al avanzar por selección u omisión entre P1, P2, P3, P4 y al salir a Mensaje, GlassSelect cierra el listbox y reinicia highlightedIndex para no heredar apertura ni opción resaltada de la pregunta anterior; el índice inicial concreto se precisará en diseño.
+  constrains:
+  - step-6
+  - step-8
+  - step-10
+  - step-12
+  - step-14
+  - step-16

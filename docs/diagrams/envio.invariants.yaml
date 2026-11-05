@@ -1,0 +1,106 @@
+diagram: envio
+invariants:
+- id: INV-1
+  statement: Antes de confirmar se revisó el brief, la voz está cerrada y la IA bloqueada; frontend establece pending y bloqueo de nuevas pulsaciones antes de iniciar POST y el plazo local de 10 segundos.
+  constrains:
+  - step-1
+  - step-2
+  - step-3
+- id: INV-2
+  statement: Los segmentos A, B y C son resultados alternativos de un intento; no se ejecutan consecutivamente y el bloqueo local de UI no garantiza idempotencia ni deduplicación extremo a extremo.
+  constrains:
+  - step-3
+  - step-4
+  - step-8
+  - step-14
+- id: INV-3
+  statement: Payload inválido produce registro de rechazo sin PII mediante structured-log-sink y respuesta 4xx sin invocar webhook; frontend conserva el brief, libera pending y pide corregir el dato.
+  constrains:
+  - step-4
+  - step-5
+  - step-6
+- id: INV-4
+  statement: La corrección de datos vuelve a captura conservando los demás valores y requiere nueva revisión antes de enviar, mientras que el reintento sin cambios reutiliza directamente el brief previamente revisado.
+  constrains:
+  - step-7
+  - step-13
+- id: INV-5
+  statement: 'En rama B el POST puede fallar antes de llegar al backend: los pasos de webhook, log backend y respuesta HTTP sólo ocurren si el servidor recibió la solicitud y observó ese fallo; no se inventa un evento Loki para una petición nunca recibida.'
+  constrains:
+  - step-8
+  - step-9
+  - step-10
+  - step-11
+  - step-12
+- id: INV-6
+  statement: Si el webhook devuelve 5xx o su operación vence, lead-submitter registra el fallo técnico observado sin PII y responde error si puede; si la red falla o se cumplen los 10 segundos locales, frontend aborta la espera o petición local, conserva el brief íntegro, libera pending y habilita reintento directo.
+  constrains:
+  - step-9
+  - step-10
+  - step-11
+  - step-12
+  - step-13
+- id: INV-7
+  statement: Abortar a los 10 segundos no demuestra cancelación de procesamiento backend ni que el lead no fue entregado; no se promete deduplicación en el reintento y el estado de entrega anterior puede ser incierto.
+  constrains:
+  - step-2
+  - step-12
+  - step-13
+- id: INV-8
+  statement: Sólo tras validar y obtener confirmación de recepción de la integración, lead-submitter registra éxito técnico sin PII y devuelve 202 Accepted; el encaminamiento al destino no demuestra persistencia final ni seguimiento comercial completado.
+  constrains:
+  - step-14
+  - step-15
+  - step-16
+  - step-17
+  - step-18
+- id: INV-9
+  statement: Ante 202 frontend libera pending, cancela el temporizador y mantiene confirmación definitiva de solicitud aceptada y envío cerrado, sin reset automático a los 3500 ms ni repetición automática del envío.
+  constrains:
+  - step-18
+  - step-19
+- id: INV-10
+  statement: Los registros structured-log-sink no contienen PII ni el payload, correo, nombre, teléfono, empresa o texto del brief, y no sustituyen el registro comercial; la ausencia de PII aplica tanto a rechazo como fallo y éxito.
+  constrains:
+  - step-4
+  - step-10
+  - step-17
+- id: INV-11
+  statement: Al resolver el intento por 4xx, 5xx, red o timeout se libera pending y se cancela el temporizador; cualquier respuesta tardía de ese intento no debe reemplazar el estado visible de un nuevo intento.
+  constrains:
+  - step-5
+  - step-11
+  - step-12
+  - step-13
+- id: INV-12
+  statement: 'Los envíos a Loki mediante structured-log-sink son best-effort, no bloqueantes y fail-open: fallo o lentitud del sink no retrasa ni cambia la respuesta comercial y nunca convierte una recepción confirmada por webhook en error en vez de 202 Accepted.'
+  constrains:
+  - step-4
+  - step-10
+  - step-17
+  - step-18
+- id: INV-13
+  statement: lead-submitter aplica a cada llamada de Lead Webhook un timeout upstream acotado de como máximo 10 segundos y termina su espera al vencer; el valor operativo se concretará en diseño sin prometer cancelación del trabajo remoto ya recibido ni deduplicación de leads.
+  constrains:
+  - step-8
+  - step-9
+  - step-14
+- id: INV-14
+  statement: Un 5xx es respuesta HTTP síncrona y la confirmación de recepción es su retorno; un timeout upstream es un resultado local de la espera de lead-submitter, no un callback ni necesariamente una respuesta HTTP enviada por webhook.
+  constrains:
+  - step-9
+  - step-16
+- id: INV-15
+  statement: Frontend emite fallos de red y timeout local de 10 segundos por browser-telemetry-sink a Faro sin PII ni payload y de modo best-effort sin bloquear conservación del brief, liberación de pending o reintento; esa observabilidad no depende de que el POST haya llegado al backend.
+  constrains:
+  - frontend
+  - grafana-faro
+  - client-failure-telemetry
+  - step-12
+- id: INV-16
+  statement: Reintentar directamente el mismo brief vuelve a ejecutar el segmento 1 con una nueva confirmación explícita, pending, bloqueo UI, POST y temporizador nuevo de 10 segundos; no reutiliza el estado pendiente ni temporizador del intento anterior.
+  constrains:
+  - step-13
+  - step-1
+  - step-2
+  - step-3

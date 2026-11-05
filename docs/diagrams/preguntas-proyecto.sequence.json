@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Preguntas de proyecto",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      980
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 180,
+      "label": "DETALLES: pregunta activa; respuestas previas compactas",
+      "variant": "return"
+    },
+    {
+      "id": "step-2",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 210,
+      "label": "Abre: clic / Enter / Espacio / ArrowDown; flechas sin wrap",
+      "variant": "default"
+    },
+    {
+      "id": "step-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 240,
+      "label": "Si cierra: Escape / clic fuera (mousedown)",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 270,
+      "label": "Lista cerrada; misma pregunta, sin avanzar",
+      "variant": "return"
+    },
+    {
+      "id": "step-5",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 340,
+      "label": "Elige opción del catálogo: clic o Enter",
+      "variant": "default"
+    },
+    {
+      "id": "step-6",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 370,
+      "label": "Guarda código; apila etiqueta humana; auto-avanza",
+      "variant": "return",
+      "note": "Guarda código interno y apila etiqueta humana (ellipsis 55%, dato completo en estado); al avanzar cierra listbox y reinicia highlightedIndex."
+    },
+    {
+      "id": "step-7",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 468,
+      "label": "Pulsa Prefiero no decir / Siguiente",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 498,
+      "label": "Campo vacío; conserva previas; avanza",
+      "variant": "return",
+      "note": "Omitir guarda \"\" y no apila fila compacta: sólo se apilan respondidas. Sin especificar aparece al llegar a TU BRIEF (resumen previo al envío); conserva previas y avanza."
+    },
+    {
+      "id": "step-9",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 596,
+      "label": "P1 projectType: landing | ecommerce | webapp | redesign | automation | other",
+      "variant": "return"
+    },
+    {
+      "id": "step-10",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 626,
+      "label": "Selecciona u omite P1 → P2",
+      "variant": "default"
+    },
+    {
+      "id": "step-11",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 656,
+      "label": "P2 budget: lt10k | 10to20k | 20to30k | quote",
+      "variant": "return"
+    },
+    {
+      "id": "step-12",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 686,
+      "label": "Selecciona u omite P2 → P3",
+      "variant": "default"
+    },
+    {
+      "id": "step-13",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 716,
+      "label": "P3 timeline: urgent | 1to3 | 3to6 | flexible",
+      "variant": "return"
+    },
+    {
+      "id": "step-14",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 746,
+      "label": "Selecciona u omite P3 → P4",
+      "variant": "default"
+    },
+    {
+      "id": "step-15",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 776,
+      "label": "P4 industry: retail | health | education | realestate | tech | services | other",
+      "variant": "return"
+    },
+    {
+      "id": "step-16",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 806,
+      "label": "Selecciona u omite P4 → Mensaje",
+      "variant": "default"
+    },
+    {
+      "id": "step-17",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 836,
+      "label": "¿Algo más que quieras contarnos? (message)",
+      "variant": "return",
+      "note": "Cambio de pregunta: listbox cerrado y highlightedIndex reiniciado; no hereda estado del selector anterior."
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 290,
+      "label": "1 · selector desplegable de opciones (GlassSelect) en la pregunta activa: abrir / cerrar sin avanzar"
+    },
+    {
+      "from": 320,
+      "to": 418,
+      "label": "2 · Rama A: guarda código del catálogo y auto-avanza (sin Continuar)"
+    },
+    {
+      "from": 448,
+      "to": 546,
+      "label": "3 · Rama B: omisión explícita — Prefiero no decir / Siguiente"
+    },
+    {
+      "from": 576,
+      "to": 885,
+      "label": "4 · Orden: projectType → budget → timeline → industry → message"
+    }
+  ]
+}

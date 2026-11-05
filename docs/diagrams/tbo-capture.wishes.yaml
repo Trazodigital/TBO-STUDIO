@@ -1,0 +1,32 @@
+diagram: tbo-capture
+links:
+  capture:
+  - W-01
+  - W-02
+  - W-03
+  - W-04
+  INV-2:
+  - W-05
+  - W-10
+  voice-channel:
+  - W-06
+  - W-08
+  INV-1:
+  - W-07
+  - W-21
+  INV-4:
+  - W-09
+  - W-14
+  - W-20
+  lead-request:
+  - W-11
+  - W-13
+  - W-22
+  INV-3:
+  - W-12
+  external-routing:
+  - W-15
+  INV-6:
+  - W-16
+  INV-5:
+  - W-18

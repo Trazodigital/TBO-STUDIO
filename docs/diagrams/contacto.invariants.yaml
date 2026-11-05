@@ -1,0 +1,45 @@
+diagram: contacto
+invariants:
+- id: INV-1
+  statement: Al abrir el sitio o navegar a consulta, frontend ya muestra DATOS DE CONTACTO con name obligatorio y phone y company opcionales, sin un paso posterior que solicite abrir esos campos.
+  constrains:
+  - step-1
+  - step-2
+  - step-3
+- id: INV-2
+  statement: 'Continuar de Contacto se evalúa al pulsar el botón o Enter en sus inputs: si name.trim() es vacío no se avanza, se muestra Requerido y se conservan phone y company; editar manualmente o aplicar voz válida limpia error sin avanzar.'
+  constrains:
+  - step-4
+  - step-5
+  - step-6
+  - step-7
+- id: INV-3
+  statement: Con name.trim() válido al evaluar Continuar de Contacto, se guardan en estado name = name.trim(), phone = phone.trim() y company = company.trim() antes de sustituir DATOS DE CONTACTO por DETALLES DEL PROYECTO con Correo Corporativo activo; opcionales con sólo espacios se guardan como string vacío para mostrar Sin especificar en el brief.
+  constrains:
+  - step-8
+  - step-9
+  - step-10
+- id: INV-4
+  statement: Los segmentos 2 y 3 son alternativas según cada evaluación de Continuar; la rama válida puede alcanzarse directamente o tras corregir y volver a ejecutar Continuar, mientras que editar o aplicar voz válida sólo limpia el error y permanece en DATOS DE CONTACTO.
+  constrains:
+  - step-4
+  - step-6
+  - step-8
+- id: INV-5
+  statement: Contacto no inicia Gemini ni exige phone o company; el guardado normalizado es una operación local de frontend antes de sustituir el bloque, no una petición de red.
+  constrains:
+  - frontend
+  - step-3
+  - step-8
+  - step-9
+- id: INV-6
+  statement: Enter en los inputs de Contacto ejecuta exclusivamente la validación y transición de Continuar de Contacto, nunca el submit final ni un POST a lead-submitter; escribir por sí solo no evalúa Continuar.
+  constrains:
+  - step-3
+  - step-4
+  - step-8
+- id: INV-7
+  statement: Sólo una actualización válida por voz realmente aplicada limpia el error de name; no se eluden confirmación ante conflicto manual, rechazo de datos inválidos o sesión cerrada ni bloqueo durante revisión o envío.
+  constrains:
+  - frontend
+  - step-7

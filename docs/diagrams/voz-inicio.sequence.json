@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Inicio de voz y credencial",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      980
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "token-issuer",
+      "type": "backend",
+      "label": "token-issuer"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live"
+    },
+    {
+      "id": "grafana-loki",
+      "type": "external",
+      "label": "Grafana Loki"
+    },
+    {
+      "id": "grafana-faro",
+      "type": "external",
+      "label": "Grafana Faro"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180,
+      "label": "Pulsa micrófono en captura",
+      "variant": "default"
+    },
+    {
+      "id": "step-2",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 210,
+      "label": "Inicio pending: bloquea activaciones; getUserMedia",
+      "variant": "return"
+    },
+    {
+      "id": "step-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 240,
+      "label": "Concede / deniega permiso de micrófono",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 270,
+      "label": "Si deniega/no micrófono: orbe en reposo (solving); manual disponible",
+      "variant": "return",
+      "note": "No llama a token-issuer ni Gemini, libera bloqueo y permite continuar manualmente; no hay solicitud de credencial que consuma cuota."
+    },
+    {
+      "id": "step-5",
+      "from": "frontend",
+      "to": "token-issuer",
+      "y": 340,
+      "label": "Sólo con permiso: token-issuance-api (HTTPS)",
+      "variant": "default"
+    },
+    {
+      "id": "step-6",
+      "from": "token-issuer",
+      "to": "gemini-live",
+      "y": 370,
+      "label": "gemini-token-source: uses: 1, newSessionExpireTime",
+      "variant": "default"
+    },
+    {
+      "id": "step-7",
+      "from": "gemini-live",
+      "to": "token-issuer",
+      "y": 400,
+      "label": "Retorno: token efímero o error",
+      "variant": "return"
+    },
+    {
+      "id": "step-8",
+      "from": "token-issuer",
+      "to": "grafana-loki",
+      "y": 430,
+      "label": "structured-log-sink: async, sin PII/clave, best-effort",
+      "variant": "dashed"
+    },
+    {
+      "id": "step-9",
+      "from": "token-issuer",
+      "to": "frontend",
+      "y": 460,
+      "label": "Retorno HTTP: token o error; Loki no bloquea",
+      "variant": "return",
+      "note": "Usa clave permanente sólo en servidor; configura credencial de un uso y ventana newSessionExpireTime sin fijar duración no verificada."
+    },
+    {
+      "id": "step-10",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 530,
+      "label": "Con token válido: voice-session-channel (WSS directo)",
+      "variant": "default"
+    },
+    {
+      "id": "step-11",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 560,
+      "label": "Retorno: sesión lista",
+      "variant": "return"
+    },
+    {
+      "id": "step-12",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 590,
+      "label": "Si lista: contexto de campos ya capturados",
+      "variant": "default",
+      "note": "systemInstruction y llenar_campo activos; no sobrescribe los datos ni elude confirmación manual. Detalles de setup/protocolo se precisarán en diseño."
+    },
+    {
+      "id": "step-13",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 620,
+      "label": "orbe escuchando (listening): ESCUCHANDO VOZ ACTIVA; habilita hablar",
+      "variant": "return"
+    },
+    {
+      "id": "step-14",
+      "from": "token-issuer",
+      "to": "frontend",
+      "y": 690,
+      "label": "Alternativa: error al emitir credencial",
+      "variant": "return"
+    },
+    {
+      "id": "step-15",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 720,
+      "label": "Alternativa: fallo WSS / red / cuota (429)",
+      "variant": "default"
+    },
+    {
+      "id": "step-16",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 750,
+      "label": "Si existe: cierra WSS; no reutiliza token",
+      "variant": "default"
+    },
+    {
+      "id": "step-17",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 780,
+      "label": "Micrófono/audio off; orbe en reposo (solving); datos y manual conservados",
+      "variant": "return",
+      "note": "MediaStreamTrack.stop() inmediato, detener audio y limpiar recursos parciales, liberar inicio pending; no reconecta automáticamente ni reutiliza token consumido."
+    },
+    {
+      "id": "step-18",
+      "from": "frontend",
+      "to": "grafana-faro",
+      "y": 810,
+      "label": "browser-telemetry-sink: sin PII/audio; best-effort",
+      "variant": "dashed"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 300,
+      "label": "1 · Solicitud de inicio, bloqueo y permiso de micrófono primero"
+    },
+    {
+      "from": 320,
+      "to": 490,
+      "label": "2 · Credencial efímera: token-issuance-api / gemini-token-source"
+    },
+    {
+      "from": 510,
+      "to": 650,
+      "label": "3 · Rama A: WSS directo, contexto inicial y orbe escuchando (listening)"
+    },
+    {
+      "from": 670,
+      "to": 850,
+      "label": "4 · Rama B: fallo de credencial o WSS — cleanup, manual y Faro"
+    }
+  ]
+}

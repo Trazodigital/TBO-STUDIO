@@ -1,0 +1,14 @@
+diagram: voz-inicio
+links:
+  INV-7:
+  - W-06
+  INV-3:
+  - W-07
+  INV-9:
+  - W-09
+  INV-11:
+  - W-16
+  step-17:
+  - W-20
+  INV-6:
+  - W-21

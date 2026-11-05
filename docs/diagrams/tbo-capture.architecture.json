@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "TBO Studio — Captación y límites de confianza",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1390,
+      650
+    ]
+  },
+  "components": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante",
+      "size": [
+        150,
+        75
+      ],
+      "row": 1,
+      "col": 0,
+      "sublabel": "Inicia la consulta"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend",
+      "size": [
+        150,
+        75
+      ],
+      "row": 1,
+      "col": 1,
+      "sublabel": "Formulario, voz y brief"
+    },
+    {
+      "id": "token-issuer",
+      "type": "backend",
+      "label": "token-issuer",
+      "size": [
+        150,
+        75
+      ],
+      "row": 0,
+      "col": 2,
+      "sublabel": "Clave permanente"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live",
+      "size": [
+        150,
+        75
+      ],
+      "row": 0,
+      "col": 3,
+      "sublabel": "Voz y herramientas"
+    },
+    {
+      "id": "lead-submitter",
+      "type": "backend",
+      "label": "lead-submitter",
+      "size": [
+        150,
+        75
+      ],
+      "row": 2,
+      "col": 2,
+      "sublabel": "Validación y entrega"
+    },
+    {
+      "id": "lead-webhook",
+      "type": "external",
+      "label": "Lead Webhook",
+      "size": [
+        150,
+        75
+      ],
+      "row": 2,
+      "col": 3,
+      "sublabel": "Integración externa"
+    },
+    {
+      "id": "commercial-destination",
+      "type": "external",
+      "label": "Destino comercial",
+      "size": [
+        150,
+        75
+      ],
+      "row": 2,
+      "col": 4,
+      "sublabel": "Recepción comercial"
+    },
+    {
+      "id": "grafana-faro",
+      "type": "external",
+      "label": "Grafana Faro",
+      "size": [
+        150,
+        75
+      ],
+      "row": 2,
+      "col": 1,
+      "sublabel": "Eventos del navegador"
+    },
+    {
+      "id": "grafana-loki",
+      "type": "external",
+      "label": "Grafana Loki",
+      "size": [
+        150,
+        75
+      ],
+      "row": 1,
+      "col": 3,
+      "sublabel": "Logs del backend"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Servidor propio / Backend Serverless (cableado por composition-root)",
+      "wraps": [
+        "token-issuer",
+        "lead-submitter"
+      ],
+      "pad": 20
+    }
+  ],
+  "connections": [
+    {
+      "id": "capture",
+      "from": "visitor",
+      "to": "frontend",
+      "label": "Datos, voz y revisión (UI)"
+    },
+    {
+      "id": "token-request",
+      "from": "frontend",
+      "to": "token-issuer",
+      "label": "token-issuance-api (HTTPS: pide / recibe token)"
+    },
+    {
+      "id": "token-source",
+      "from": "token-issuer",
+      "to": "gemini-live",
+      "label": "gemini-token-source"
+    },
+    {
+      "id": "voice-channel",
+      "from": "frontend",
+      "to": "gemini-live",
+      "label": "voice-session-channel (WSS: voz ⇄ llenar_campo)",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [
+          395,
+          35
+        ],
+        [
+          975,
+          35
+        ]
+      ],
+      "labelAt": [
+        685,
+        35
+      ]
+    },
+    {
+      "id": "lead-request",
+      "from": "frontend",
+      "to": "lead-submitter",
+      "label": "lead-submission-api (HTTPS: brief → 202 | error)"
+    },
+    {
+      "id": "validated-delivery",
+      "from": "lead-submitter",
+      "to": "lead-webhook",
+      "label": "lead-destination",
+      "labelAt": [
+        830,
+        460
+      ]
+    },
+    {
+      "id": "external-routing",
+      "from": "lead-webhook",
+      "to": "commercial-destination",
+      "label": "Entrega lead"
+    },
+    {
+      "id": "browser-events",
+      "from": "frontend",
+      "to": "grafana-faro",
+      "label": "browser-telemetry-sink",
+      "labelDy": 40
+    },
+    {
+      "id": "token-logs",
+      "from": "token-issuer",
+      "to": "grafana-loki",
+      "label": "structured-log-sink"
+    },
+    {
+      "id": "lead-logs",
+      "from": "lead-submitter",
+      "to": "grafana-loki",
+      "label": "structured-log-sink",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [
+        [
+          685,
+          390
+        ],
+        [
+          975,
+          390
+        ]
+      ],
+      "labelAt": [
+        830,
+        390
+      ]
+    }
+  ],
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      30,
+      90
+    ],
+    "cols": 5,
+    "gapX": 140,
+    "gapY": 100,
+    "cellW": 150,
+    "cellH": 75
+  },
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "composition-root — configuración e inyección, no nodo de red",
+      "items": [
+        "Servidor propio / Backend Serverless: composition-root instancia y cablea los módulos token-issuer y lead-submitter con los adaptadores de los siete puertos. La flecha marca al iniciador; la etiqueta resume ambos sentidos.",
+        "Puertos: token-issuance-api, gemini-token-source, voice-session-channel, lead-submission-api, lead-destination, structured-log-sink y browser-telemetry-sink.",
+        "frontend mantiene formulario, voz y brief unificados. gemini-token-source: HTTPS: crea token efímero; lead-destination: HTTPS: solicitud válida."
+      ]
+    }
+  ]
+}

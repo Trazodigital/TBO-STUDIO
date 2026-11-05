@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Mensaje, revisión y corrección",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1500,
+      750
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 180,
+      "label": "¿Algo más que quieras contarnos? (textarea, 3 filas)",
+      "variant": "return"
+    },
+    {
+      "id": "step-2",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 214,
+      "label": "Escribe u omite mensaje; pulsa Continuar",
+      "variant": "default",
+      "note": "Guarda message = message.trim() antes de entrar a revisión"
+    },
+    {
+      "id": "step-3",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 248,
+      "label": "Si activa: cierra WSS; detiene micrófono/audio",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 282,
+      "label": "TU BRIEF (resumen previo al envío): 9 filas; voz cerrada / llenar_campo bloqueado",
+      "variant": "return"
+    },
+    {
+      "id": "step-5",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 350,
+      "label": "Opcional: solicita corregir desde TU BRIEF",
+      "variant": "default"
+    },
+    {
+      "id": "step-6",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 384,
+      "label": "Captura: conserva 9 campos; voz no se reinicia",
+      "variant": "return"
+    },
+    {
+      "id": "step-7",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 418,
+      "label": "Modifica datos y solicita volver a revisar",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 452,
+      "label": "Si obligatorios inválidos: error; sigue en captura",
+      "variant": "return"
+    },
+    {
+      "id": "step-9",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 486,
+      "label": "Si hubo error: corrige y solicita revisar otra vez",
+      "variant": "default"
+    },
+    {
+      "id": "step-10",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 520,
+      "label": "Si válidos y voz activa: vuelve a cerrar WSS",
+      "variant": "default"
+    },
+    {
+      "id": "step-11",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 554,
+      "label": "Si válidos: TU BRIEF actualizado; voz cerrada / IA bloqueada",
+      "variant": "return"
+    },
+    {
+      "id": "step-12",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 620,
+      "label": "ENVIAR SOLICITUD → secuencia de Validación y entrega",
+      "variant": "default",
+      "note": "Sólo con TU BRIEF visible, voz cerrada e IA bloqueada; el ciclo pending/POST/timeout se detalla en envio."
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 305,
+      "label": "1 · Mensaje opcional (textarea) y entrada a TU BRIEF"
+    },
+    {
+      "from": 325,
+      "to": 575,
+      "label": "2 · Opcional: volver a captura, editar y revalidar"
+    },
+    {
+      "from": 595,
+      "to": 670,
+      "label": "3 · Confirmación de envío"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "TU BRIEF — formato y captura",
+      "items": [
+        "Orden: Nombre · Teléfono · Empresa · Correo · Tipo de proyecto · Presupuesto · Plazo · Industria · Mensaje.",
+        "Etiquetas y valores humanos, no códigos internos; opcionales vacíos: Sin especificar. Textarea: Enter añade salto de línea, nunca envía."
+      ]
+    }
+  ]
+}

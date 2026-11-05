@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Recorrido general integrado",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      1034
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "token-issuer",
+      "type": "backend",
+      "label": "token-issuer"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live"
+    },
+    {
+      "id": "lead-submitter",
+      "type": "backend",
+      "label": "lead-submitter"
+    },
+    {
+      "id": "lead-webhook",
+      "type": "external",
+      "label": "Lead Webhook"
+    },
+    {
+      "id": "commercial-destination",
+      "type": "external",
+      "label": "Destino comercial"
+    }
+  ],
+  "messages": [
+    {
+      "id": "macro-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180,
+      "label": "Entra a captura",
+      "variant": "default"
+    },
+    {
+      "id": "macro-2",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 210,
+      "label": "Presenta DATOS DE CONTACTO y panel de voz; orbe en reposo (solving)",
+      "variant": "return"
+    },
+    {
+      "id": "macro-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 270,
+      "label": "Ruta manual: aporta contacto y proyecto",
+      "variant": "default"
+    },
+    {
+      "id": "macro-4",
+      "from": "frontend",
+      "to": "token-issuer",
+      "y": 300,
+      "label": "Sólo ruta voz: solicita credencial efímera",
+      "variant": "default"
+    },
+    {
+      "id": "macro-5",
+      "from": "token-issuer",
+      "to": "frontend",
+      "y": 330,
+      "label": "Retorno: credencial temporal",
+      "variant": "return",
+      "note": "token-issuer emite eventos técnicos a Grafana Loki por structured-log-sink sin PII ni credenciales; best-effort no bloqueante."
+    },
+    {
+      "id": "macro-6",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 396,
+      "label": "Sólo ruta voz: sesión WSS directa",
+      "variant": "default"
+    },
+    {
+      "id": "macro-7",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 426,
+      "label": "Gemini → frontend: voz / toolCall: llenar_campo",
+      "variant": "default"
+    },
+    {
+      "id": "macro-tool-response",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 456,
+      "label": "toolResponse: resultado; actualiza estado si aceptado",
+      "variant": "return",
+      "note": "Políticas de validación y conflicto manual en voz-campos. Frontend emite eventos técnicos a Grafana Faro por browser-telemetry-sink, sin PII/audio y best-effort."
+    },
+    {
+      "id": "macro-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 514,
+      "label": "Convergencia: mismo formulario y brief compartidos",
+      "variant": "return"
+    },
+    {
+      "id": "macro-9",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 574,
+      "label": "Solicita revisar TU BRIEF (resumen previo al envío)",
+      "variant": "default"
+    },
+    {
+      "id": "macro-10",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 604,
+      "label": "Si voz activa: cierra WSS",
+      "variant": "default"
+    },
+    {
+      "id": "macro-11",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 634,
+      "label": "TU BRIEF: micrófono/audio off; IA bloqueada",
+      "variant": "return"
+    },
+    {
+      "id": "macro-12",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 694,
+      "label": "Confirma ENVIAR SOLICITUD",
+      "variant": "default"
+    },
+    {
+      "id": "macro-13",
+      "from": "frontend",
+      "to": "lead-submitter",
+      "y": 724,
+      "label": "POST → lead-submitter: pending, bloqueo UI, timeout 10 s",
+      "variant": "default",
+      "note": "Frontend activa pending antes del POST y bloquea nuevas pulsaciones; lead-submitter valida en servidor antes de llamar Lead Webhook. Loki: eventos técnicos de lead-submitter sin PII, best-effort, no bloquea HTTP."
+    },
+    {
+      "id": "macro-14",
+      "from": "lead-submitter",
+      "to": "lead-webhook",
+      "y": 810,
+      "label": "Valida; si válida, entrega",
+      "variant": "default"
+    },
+    {
+      "id": "macro-15",
+      "from": "lead-webhook",
+      "to": "commercial-destination",
+      "y": 840,
+      "label": "Encamina al destino configurado",
+      "variant": "default"
+    },
+    {
+      "id": "macro-16",
+      "from": "lead-webhook",
+      "to": "lead-submitter",
+      "y": 870,
+      "label": "Retorno: recepción o fallo",
+      "variant": "return"
+    },
+    {
+      "id": "macro-17",
+      "from": "lead-submitter",
+      "to": "frontend",
+      "y": 900,
+      "label": "Retorno: 202 o error",
+      "variant": "return"
+    },
+    {
+      "id": "macro-18",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 930,
+      "label": "202: aceptada / error: conserva brief y recupera",
+      "variant": "return"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 230,
+      "label": "1 · Entrada a captura"
+    },
+    {
+      "from": 250,
+      "to": 534,
+      "label": "2 · Rutas alternativas: manual o voz → un solo estado compartido"
+    },
+    {
+      "from": 554,
+      "to": 654,
+      "label": "3 · Revisión: cerrar voz y bloquear IA"
+    },
+    {
+      "from": 674,
+      "to": 955,
+      "label": "4 · Envío y entrega: aceptación o recuperación"
+    }
+  ]
+}

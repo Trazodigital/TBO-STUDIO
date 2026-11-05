@@ -1,0 +1,55 @@
+diagram: correo
+invariants:
+- id: INV-1
+  statement: En DETALLES DEL PROYECTO la pregunta activa es Correo Corporativo y se conservan name, phone y company en estado, permitiendo tanto dominios personales como corporativos.
+  constrains:
+  - step-1
+  - step-2
+- id: INV-2
+  statement: Cada pulsación de Continuar calcula email.trim(); si está vacío muestra Requerido y no avanza, antes de comprobar formato.
+  constrains:
+  - step-3
+  - step-4
+- id: INV-3
+  statement: Si email.trim() no está vacío y no cumple /^[^\s@]+@[^\s@]+\.[^\s@]+$/ al pulsar Continuar, se muestra Email inválido y no se avanza.
+  constrains:
+  - step-7
+  - step-8
+- id: INV-4
+  statement: Editar email manualmente o aplicar una actualización válida aceptada de llenar_campo limpia el error activo Requerido o Email inválido sin avanzar de paso, completar la fila ni cambiar pregunta; sigue siendo necesaria otra pulsación de Continuar.
+  constrains:
+  - step-5
+  - step-6
+  - step-9
+  - step-10
+  - step-11
+- id: INV-5
+  statement: Si email.trim() no está vacío y cumple /^[^\s@]+@[^\s@]+\.[^\s@]+$/ al pulsar Continuar, se persiste en estado email = email.trim() conservando name, phone y company, y después Correo se renderiza como fila compacta sobre Pregunta 1 projectType; la validación no depende de HTML5 y no convierte el correo a minúsculas.
+  constrains:
+  - step-11
+  - step-12
+  - step-13
+- id: INV-6
+  statement: Las ramas 2, 3 y 4 son mutuamente excluyentes por cada pulsación de Continuar; la válida puede ocurrir directamente o tras editar y volver a pulsar, sin tener que recorrer ambos errores.
+  constrains:
+  - step-3
+  - step-7
+  - step-11
+- id: INV-7
+  statement: Ante errores o edición se conservan los datos previos de contacto y la captura manual no necesita Gemini; el guardado normalizado es local en frontend, no una petición de red.
+  constrains:
+  - frontend
+  - step-4
+  - step-8
+  - step-11
+- id: INV-8
+  statement: La fila compacta limita visualmente el valor al 55% del ancho disponible para su valor y usa ellipsis para valores largos, sin recortar el string completo guardado en estado ni el usado por el brief y el payload.
+  constrains:
+  - step-12
+  - step-13
+- id: INV-9
+  statement: 'La actualización por voz sólo limpia error si el valor válido se aplica realmente: se mantienen confirmación previa para conflicto manual y rechazo sin mutación para datos inválidos, sesiones cerradas o revisión/envío bloqueados.'
+  constrains:
+  - frontend
+  - step-6
+  - step-10

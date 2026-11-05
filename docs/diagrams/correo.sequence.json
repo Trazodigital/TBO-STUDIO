@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Correo obligatorio",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1400,
+      780
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 180,
+      "label": "DETALLES DEL PROYECTO: Correo Corporativo",
+      "variant": "return"
+    },
+    {
+      "id": "step-2",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 210,
+      "label": "Escribe correo personal o corporativo",
+      "variant": "default"
+    },
+    {
+      "id": "step-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 270,
+      "label": "Continuar: email.trim() vacío",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 300,
+      "label": "No avanza; error: Requerido",
+      "variant": "return"
+    },
+    {
+      "id": "step-5",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 330,
+      "label": "Edita email",
+      "variant": "default"
+    },
+    {
+      "id": "step-6",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 360,
+      "label": "Editar / aplicar voz válida limpia error; no avanza",
+      "variant": "return"
+    },
+    {
+      "id": "step-7",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 420,
+      "label": "Continuar: email.trim() no cumple /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 450,
+      "label": "No avanza; error: Email inválido",
+      "variant": "return"
+    },
+    {
+      "id": "step-9",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 480,
+      "label": "Edita email",
+      "variant": "default"
+    },
+    {
+      "id": "step-10",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 510,
+      "label": "Editar / aplicar voz válida limpia error; no avanza",
+      "variant": "return"
+    },
+    {
+      "id": "step-11",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 570,
+      "label": "Continuar: email.trim() válido",
+      "variant": "default"
+    },
+    {
+      "id": "step-12",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 600,
+      "label": "Correo: fila compacta, ellipsis visual (55%)",
+      "variant": "return"
+    },
+    {
+      "id": "step-13",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 630,
+      "label": "Pregunta 1 activa: projectType",
+      "variant": "return",
+      "note": "Estado y brief conservan email completo"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 230,
+      "label": "1 · Presentación de Correo Corporativo"
+    },
+    {
+      "from": 250,
+      "to": 380,
+      "label": "2 · Rama inválida A: email.trim() vacío"
+    },
+    {
+      "from": 400,
+      "to": 530,
+      "label": "3 · Inválida B: !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim())"
+    },
+    {
+      "from": 550,
+      "to": 675,
+      "label": "4 · Válida: guarda email = email.trim(); conserva name, phone y company"
+    }
+  ]
+}

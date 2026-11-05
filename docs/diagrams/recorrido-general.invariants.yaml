@@ -1,0 +1,86 @@
+diagram: recorrido-general
+invariants:
+- id: INV-1
+  statement: Esta es una vista integradora auxiliar de alto nivel de las ocho secuencias funcionales, no una fuente de nuevos comportamientos ni de requisitos duplicados; cada regla detallada y su derivación se mantienen en la secuencia funcional que la define.
+  constrains:
+  - macro-1
+  - macro-8
+  - macro-11
+  - macro-18
+- id: INV-2
+  statement: 'Las rutas manual y voz del segmento 2 son alternativas que pueden alternarse y alimentar el mismo estado compartido: la manual es completa sin Gemini, y la ruta de voz sólo se inicia por decisión explícita del visitante y sus pasos son condicionales.'
+  constrains:
+  - macro-3
+  - macro-4
+  - macro-6
+  - macro-7
+  - macro-8
+- id: INV-3
+  statement: Captura manual y progresión se detallan en contacto, correo y preguntas-proyecto; aquí no se repiten validaciones, catálogos ni guardas de teclado.
+  constrains:
+  - macro-3
+  - macro-8
+- id: INV-4
+  statement: 'La emisión y sus errores se detallan en voz-inicio: permiso antes de token, token-issuer usa gemini-token-source con la clave en servidor y devuelve credencial nueva de un uso; la omisión de ese subintercambio en esta vista no implica que token-issuer genere por sí solo la credencial ni que la clave llegue al navegador.'
+  constrains:
+  - macro-4
+  - macro-5
+  - macro-6
+- id: INV-5
+  statement: La sesión WSS directa, tool calls, confirmaciones manuales y recuperación se detallan en voz-campos y voz-cierre; la voz no envía automáticamente el lead y su fallo conserva captura y permite ruta manual sin reconexión automática.
+  constrains:
+  - macro-6
+  - macro-7
+  - macro-8
+- id: INV-6
+  statement: 'Revisión y corrección se detallan en mensaje-brief: cerrar voz activa, detener micrófono/audio y bloquear IA sin cola precede la vista de resumen previo al envío (TU BRIEF); sólo el visitante confirma enviar y editar exige volver a revisar.'
+  constrains:
+  - macro-9
+  - macro-10
+  - macro-11
+  - macro-12
+- id: INV-7
+  statement: 'Validación y entrega se detallan en envio: inválidas no cruzan webhook y se recuperan conservando brief; la rama de entrega dibujada sólo ocurre si el backend valida, sin ruta directa navegador-webhook.'
+  constrains:
+  - macro-13
+  - macro-14
+  - macro-15
+  - macro-18
+- id: INV-8
+  statement: '202 y error son alternativas: 202 confirma aceptación por integración, no persistencia final del destino ni seguimiento comercial completado; errores permiten corregir o reintentar conservando brief según envio.'
+  constrains:
+  - macro-15
+  - macro-16
+  - macro-17
+  - macro-18
+- id: INV-9
+  statement: Pending, bloqueo UI, timeouts, observabilidad sin PII y variantes de error se conservan en envio, voz-inicio, voz-campos y voz-cierre sin repetirse en este mapa macro; la ausencia de Loki/Faro aquí no modifica la arquitectura ni elimina sus obligaciones.
+  constrains:
+  - macro-4
+  - macro-7
+  - macro-13
+  - macro-17
+- id: INV-10
+  statement: 'El POST del brief siempre termina en lead-submitter: frontend activa pending, bloqueo de nuevas pulsaciones y timeout local de 10 segundos; sólo lead-submitter valida en servidor y sólo si es válida llama Lead Webhook, que encamina al destino.'
+  constrains:
+  - macro-13
+  - macro-14
+  - macro-15
+- id: INV-11
+  statement: Al entrar ya se presentan DATOS DE CONTACTO y panel de voz con orbe en reposo (solving); no hay un paso adicional obligatorio de elegir una ruta antes de mostrar el formulario y ambas vías alimentan el estado compartido.
+  constrains:
+  - macro-1
+  - macro-2
+  - macro-8
+- id: INV-12
+  statement: Gemini emite toolCall llenar_campo hacia frontend y éste responde toolResponse al mismo canal, aplicando cambios a formulario y brief sólo cuando son aceptados por las reglas detalladas en voz-campos; los rechazos también reciben la resolución que corresponda sin mutar estado.
+  constrains:
+  - macro-7
+  - macro-tool-response
+  - macro-8
+- id: INV-13
+  statement: token-issuer y lead-submitter emiten eventos técnicos a Grafana Loki por structured-log-sink y frontend a Grafana Faro por browser-telemetry-sink, sin PII, audio, claves ni credenciales y best-effort no bloqueante; estas notas no añaden pasos comerciales ni eliminan las reglas fail-open de las secuencias detalladas.
+  constrains:
+  - macro-4
+  - macro-13
+  - macro-tool-response
