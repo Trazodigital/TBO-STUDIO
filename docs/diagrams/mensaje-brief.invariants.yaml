@@ -1,0 +1,59 @@
+diagram: mensaje-brief
+invariants:
+- id: INV-1
+  statement: La pregunta ¿Algo más que quieras contarnos? usa textarea de 3 filas, es opcional y Enter introduce salto de línea sin submit ni avance; sólo pulsar Continuar inicia revisión.
+  constrains:
+  - step-1
+  - step-2
+- id: INV-2
+  statement: Al continuar se persiste message = message.trim(); antes de renderizar la vista de resumen previo al envío (TU BRIEF) se cierra la sesión WSS si existe, se detienen micrófono y audio, se limpian recursos de voz y se bloquea llenar_campo sin encolar cambios.
+  constrains:
+  - step-2
+  - step-3
+  - step-4
+- id: INV-3
+  statement: TU BRIEF muestra exactamente nueve filas ordenadas name, phone, company, email, projectType, budget, timeline, industry y message, con etiquetas humanas y traducción a valores legibles de los códigos internos; opcionales vacíos muestran Sin especificar.
+  constrains:
+  - step-4
+  - step-11
+- id: INV-4
+  statement: Volver a captura conserva los nueve campos y no reinicia voz automáticamente; usarla requiere una nueva pulsación explícita del micrófono y el flujo voz-inicio.
+  constrains:
+  - step-5
+  - step-6
+- id: INV-5
+  statement: Al solicitar revisar tras editar, frontend revalida name.trim() no vacío y email.trim() con /^[^\s@]+@[^\s@]+\.[^\s@]+$/; nombre vacío o correo vacío muestran Requerido y correo no vacío con formato inválido muestra Email inválido, reteniendo la captura y los demás datos.
+  constrains:
+  - step-7
+  - step-8
+  - step-9
+- id: INV-6
+  statement: Editar datos o limpiar errores no avanza automáticamente a revisión; se solicita revisar de nuevo y las ramas inválida y válida son alternativas por cada solicitud de revisión.
+  constrains:
+  - step-7
+  - step-8
+  - step-9
+  - step-11
+- id: INV-7
+  statement: Con obligatorios válidos se conservan las normalizaciones acordadas name = name.trim(), email = email.trim() y message = message.trim(), sin perder phone, company ni respuestas opcionales; si se reactivó voz se cierra otra vez y se detienen micrófono/audio antes del brief actualizado.
+  constrains:
+  - step-7
+  - step-10
+  - step-11
+- id: INV-8
+  statement: Sólo con TU BRIEF visible, voz cerrada e IA bloqueada, ENVIAR SOLICITUD entra en la secuencia envio; aquí no se realiza un segundo envío ni se duplica su ciclo pending, bloqueo UI, POST y timeout.
+  constrains:
+  - step-11
+  - step-12
+- id: INV-9
+  statement: El regreso a captura del segmento 2 es opcional y puede repetirse; si el visitante no pide corregir pasa de TU BRIEF a confirmación sin recorrer pasos de edición o revalidación posterior a edición.
+  constrains:
+  - step-4
+  - step-5
+  - step-12
+- id: INV-10
+  statement: Las llamadas a Gemini dibujan cierre sólo si existe sesión; detener micrófono/audio y bloquear actualizaciones son acciones locales de frontend y no mensajes enviados a Gemini ni permisos de envío autónomo.
+  constrains:
+  - step-3
+  - step-10
+  - frontend

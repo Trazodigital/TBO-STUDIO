@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Validación y entrega de solicitud",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      950
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "lead-submitter",
+      "type": "backend",
+      "label": "lead-submitter"
+    },
+    {
+      "id": "lead-webhook",
+      "type": "external",
+      "label": "Lead Webhook"
+    },
+    {
+      "id": "commercial-destination",
+      "type": "external",
+      "label": "Destino comercial"
+    },
+    {
+      "id": "grafana-loki",
+      "type": "external",
+      "label": "Grafana Loki"
+    },
+    {
+      "id": "grafana-faro",
+      "type": "external",
+      "label": "Grafana Faro"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180,
+      "label": "Enviar: brief revisado; voz cerrada",
+      "variant": "default"
+    },
+    {
+      "id": "step-2",
+      "from": "frontend",
+      "to": "lead-submitter",
+      "y": 208,
+      "label": "POST: pending, bloqueo UI, timeout 10 s",
+      "variant": "default"
+    },
+    {
+      "id": "step-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 236,
+      "label": "Pulsación adicional: sin otro POST",
+      "variant": "default"
+    },
+    {
+      "id": "step-4",
+      "from": "lead-submitter",
+      "to": "grafana-loki",
+      "y": 296,
+      "label": "Payload inválido: rechazo sin PII",
+      "variant": "dashed",
+      "note": "structured-log-sink, sin PII; best-effort, no bloquea la respuesta HTTP"
+    },
+    {
+      "id": "step-5",
+      "from": "lead-submitter",
+      "to": "frontend",
+      "y": 324,
+      "label": "4xx: sin invocar Lead Webhook",
+      "variant": "return"
+    },
+    {
+      "id": "step-6",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 352,
+      "label": "Conserva brief; libera pending; pide corregir",
+      "variant": "return"
+    },
+    {
+      "id": "step-7",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 380,
+      "label": "Corrige el dato (volver a captura)",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "lead-submitter",
+      "to": "lead-webhook",
+      "y": 440,
+      "label": "Solicitud válida: timeout upstream ≤ 10 s",
+      "variant": "default"
+    },
+    {
+      "id": "step-9",
+      "from": "lead-webhook",
+      "to": "lead-submitter",
+      "y": 468,
+      "label": "Si upstream falla: 5xx / timeout",
+      "variant": "return"
+    },
+    {
+      "id": "step-10",
+      "from": "lead-submitter",
+      "to": "grafana-loki",
+      "y": 496,
+      "label": "Fallo técnico observado: sin PII",
+      "variant": "dashed",
+      "note": "structured-log-sink, sin PII; best-effort, no bloquea la respuesta HTTP"
+    },
+    {
+      "id": "step-11",
+      "from": "lead-submitter",
+      "to": "frontend",
+      "y": 524,
+      "label": "Si canal disponible: error",
+      "variant": "return"
+    },
+    {
+      "id": "step-12",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 552,
+      "label": "Red / 10 s / 5xx: brief intacto; reintento",
+      "variant": "return"
+    },
+    {
+      "id": "client-failure-telemetry",
+      "from": "frontend",
+      "to": "grafana-faro",
+      "label": "Red / timeout 10 s: evento sin PII",
+      "variant": "dashed",
+      "note": "browser-telemetry-sink; best-effort",
+      "y": 580
+    },
+    {
+      "id": "step-13",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 608,
+      "label": "Reintenta mismo brief → Segmento 1",
+      "variant": "default"
+    },
+    {
+      "id": "step-14",
+      "from": "lead-submitter",
+      "to": "lead-webhook",
+      "y": 668,
+      "label": "Solicitud válida: timeout upstream ≤ 10 s",
+      "variant": "default"
+    },
+    {
+      "id": "step-15",
+      "from": "lead-webhook",
+      "to": "commercial-destination",
+      "y": 696,
+      "label": "Encaminar lead al destino configurado",
+      "variant": "default"
+    },
+    {
+      "id": "step-16",
+      "from": "lead-webhook",
+      "to": "lead-submitter",
+      "y": 724,
+      "label": "Confirma recepción",
+      "variant": "return"
+    },
+    {
+      "id": "step-17",
+      "from": "lead-submitter",
+      "to": "grafana-loki",
+      "y": 752,
+      "label": "Éxito técnico: sin PII",
+      "variant": "dashed",
+      "note": "structured-log-sink, sin PII; best-effort, no bloquea la respuesta HTTP"
+    },
+    {
+      "id": "step-18",
+      "from": "lead-submitter",
+      "to": "frontend",
+      "y": 780,
+      "label": "HTTP 202 Accepted",
+      "variant": "return"
+    },
+    {
+      "id": "step-19",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 808,
+      "label": "Solicitud aceptada; envío cerrado",
+      "variant": "return",
+      "note": "Confirmación definitiva: solicitud aceptada (envío cerrado; sin reset a los 3500 ms)"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 256,
+      "label": "1 · Confirmación, pending, bloqueo UI y timeout (10 s)"
+    },
+    {
+      "from": 276,
+      "to": 400,
+      "label": "2 · Rama A: payload inválido — 4xx, sin Webhook"
+    },
+    {
+      "from": 420,
+      "to": 628,
+      "label": "3 · Rama B: red / timeout (10 s) / upstream 5xx"
+    },
+    {
+      "from": 648,
+      "to": 853,
+      "label": "4 · Rama C: entrega aceptada — HTTP 202 Accepted"
+    }
+  ]
+}

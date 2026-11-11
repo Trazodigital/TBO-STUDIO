@@ -1,0 +1,41 @@
+diagram: tbo-capture
+invariants:
+- id: INV-1
+  statement: La clave permanente permanece en token-issuer y la voz conecta frontend directamente con Gemini mediante credencial temporal.
+  constrains:
+  - frontend
+  - token-issuer
+  - gemini-live
+- id: INV-2
+  statement: La captura manual no depende de Gemini y sólo el visitante confirma el envío del brief revisado.
+  constrains:
+  - frontend
+  - lead-request
+- id: INV-3
+  statement: El navegador nunca entrega directamente al webhook y lead-submitter valida antes del destino externo.
+  constrains:
+  - frontend
+  - lead-submitter
+  - lead-webhook
+- id: INV-4
+  statement: El frontend conserva el brief y permite recuperar errores de red, validación, 5xx o timeout local de envío de 10 segundos sin interpretar timeout como respuesta HTTP ni garantizar que el servidor no recibió la solicitud.
+  constrains:
+  - frontend
+  - lead-request
+- id: INV-5
+  statement: composition-root, documentado en las cards, instancia y conecta los módulos y adaptadores de los siete puertos dentro de la frontera servidor sin ser un nodo de red del flujo comercial.
+  constrains:
+  - token-issuer
+  - lead-submitter
+- id: INV-6
+  statement: Faro y Loki son sistemas externos de observabilidad y sus eventos no sustituyen el registro comercial del lead.
+  constrains:
+  - grafana-faro
+  - grafana-loki
+  - browser-events
+  - token-logs
+  - lead-logs
+- id: INV-7
+  statement: La flecha única señala al iniciador y la etiqueta resume ambos sentidos del intercambio; en WSS llenar_campo viaja desde Gemini a frontend y toolResponse vuelve a Gemini.
+  constrains:
+  - voice-channel

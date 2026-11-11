@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Contacto e inicio de consulta",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1350,
+      760
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180,
+      "label": "Abre sitio / navega a consulta",
+      "variant": "default"
+    },
+    {
+      "id": "step-2",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 218,
+      "label": "Muestra DATOS DE CONTACTO: name, phone, company",
+      "variant": "return"
+    },
+    {
+      "id": "step-3",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 256,
+      "label": "Ingresa datos; phone/company opcionales",
+      "variant": "default",
+      "note": "Enter en estos inputs evalúa Continuar de Contacto y nunca dispara el submit final de la solicitud."
+    },
+    {
+      "id": "step-4",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 330,
+      "label": "Pulsa Continuar: name.trim() vacío",
+      "variant": "default"
+    },
+    {
+      "id": "step-5",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 368,
+      "label": "No avanza: Requerido; conserva phone/company",
+      "variant": "return"
+    },
+    {
+      "id": "step-6",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 406,
+      "label": "Edita name",
+      "variant": "default"
+    },
+    {
+      "id": "step-7",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 444,
+      "label": "Editar / aplicar voz válida limpia error; permanece en DATOS DE CONTACTO",
+      "variant": "return"
+    },
+    {
+      "id": "step-8",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 520,
+      "label": "Pulsa Continuar: name.trim() con contenido",
+      "variant": "default"
+    },
+    {
+      "id": "step-9",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 558,
+      "label": "Sustituye bloque: DETALLES DEL PROYECTO",
+      "variant": "return"
+    },
+    {
+      "id": "step-10",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 596,
+      "label": "Pregunta activa: Correo Corporativo",
+      "variant": "return",
+      "note": "Con name.trim() válido: persiste name = name.trim(), phone = phone.trim() y company = company.trim() antes de sustituir DATOS DE CONTACTO por DETALLES DEL PROYECTO."
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 295,
+      "label": "1 · Presentación y captura inicial"
+    },
+    {
+      "from": 300,
+      "to": 465,
+      "label": "2 · Rama inválida: name.trim() vacío"
+    },
+    {
+      "from": 490,
+      "to": 660,
+      "label": "3 · Válida al Continuar: guarda en estado name/phone/company con trim()"
+    }
+  ]
+}

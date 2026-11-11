@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkpoint 1 — the diagrams</title>
+<style>
+body { font: 14px system-ui, sans-serif; margin: 1.5rem; color: #111; background: #fff; }
+h1 { margin-bottom: 0.2rem; }
+h2 { margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.2rem; }
+.lead { color: #444; margin-top: 0; }
+.summary { background: #fffbe6; border: 1px solid #e6d58a; padding: 0.5rem 0.75rem; }
+section { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin: 0.5rem 0 1.5rem; }
+th, td { border: 1px solid #ccc; padding: 0.35rem 0.5rem; text-align: left;
+  vertical-align: top; }
+th { background: #eee; position: sticky; top: 0; }
+.card { border: 1px solid #ccc; border-left: 5px solid; margin: 0.8rem 0;
+  padding: 0.6rem 0.8rem; max-width: 60rem; }
+.card.open { border-left-color: #1f6feb; background: #f5f9ff; }
+.card.answered { border-left-color: #070; }
+.card.agent { border-left-color: #888; }
+.line { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.6rem; margin: 0.25rem 0; }
+.label { font-weight: 600; color: #555; }
+.why { color: #b00; font-weight: 600; }
+.before { color: #05631d; }
+.proposed { font-weight: 600; }
+.answered .answer { color: #05631d; font-weight: 600; }
+.card ol { margin: 0; padding-left: 1.2rem; }
+.title { display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 0.3rem; }
+.meta { color: #666; font-size: 12px; font-family: ui-monospace, monospace; }
+.example { color: #555; font-family: ui-monospace, monospace; margin-left: 0.5rem; }
+.conflict { color: #b00; font-weight: 600; }
+i { color: #036; }
+ins { background: #d7f5dd; color: #05631d; }
+del { background: #fde0e0; color: #a40000; }
+tr.system td { background: #f3f6fb; font-weight: 500; }
+tr.software td.uid { padding-left: 1.6rem; }
+tr.high td.criticality { color: #b00; font-weight: 600; }
+td.mark { font-size: 12px; font-weight: 600; }
+tr.new td.mark { box-shadow: inset 5px 0 #1f6feb; color: #1f6feb; }
+tr.changed td.mark { box-shadow: inset 5px 0 #b8860b; color: #b8860b; }
+tr.removed td.mark { box-shadow: inset 5px 0 #888; color: #666; }
+tr.removed td { color: #777; }
+.case { margin: 2px 0; padding-left: 4px; border-left: 3px solid; }
+.case.happy { border-color: #070; }
+.case.edge { border-color: #a60; }
+.case.error { border-color: #b00; }
+.threshold { font-weight: 700; }
+.added { background: #d7f5dd; }
+.gone { background: #fde0e0; }
+body.only tr.unchanged { display: none; }
+iframe { width: 100%; height: 480px; border: 1px solid #ccc; }
+.picture.new .mark { color: #1f6feb; font-weight: 600; }
+.picture.changed .mark { color: #b8860b; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Checkpoint 1 — the diagrams</h1>
+<p class="lead">Each diagram: its pictures, then its rules and the wishes each element realises — the pictures cannot show them, yet your approval covers them. Rendered by the framework's render_diagram_review_tool from the committed files; never edited by hand.</p>
+<p class="summary">Nothing is marked: no earlier approval of checkpoint 1 to compare with.</p>
+<section>
+<h2>contacto</h2>
+<div class="picture "><p><span class="mark"></span><a href="contacto.sequence.html" target="_blank">contacto.sequence.html</a></p><iframe src="contacto.sequence.html" title="contacto.sequence.html"></iframe></div>
+<section>
+<h2>Rules of contacto (contacto.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Al abrir el sitio o navegar a consulta, frontend ya muestra DATOS DE CONTACTO con name obligatorio y phone y company opcionales, sin un paso posterior que solicite abrir esos campos.</div></td><td class="constrains"><div>step-1</div><div>step-2</div><div>step-3</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Continuar de Contacto se evalúa al pulsar el botón o Enter en sus inputs: si name.trim() es vacío no se avanza, se muestra Requerido y se conservan phone y company; editar manualmente o aplicar voz válida limpia error sin avanzar.</div></td><td class="constrains"><div>step-4</div><div>step-5</div><div>step-6</div><div>step-7</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Con name.trim() válido al evaluar Continuar de Contacto, se guardan en estado name = name.trim(), phone = phone.trim() y company = company.trim() antes de sustituir DATOS DE CONTACTO por DETALLES DEL PROYECTO con Correo Corporativo activo; opcionales con sólo espacios se guardan como string vacío para mostrar Sin especificar en el brief.</div></td><td class="constrains"><div>step-8</div><div>step-9</div><div>step-10</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Los segmentos 2 y 3 son alternativas según cada evaluación de Continuar; la rama válida puede alcanzarse directamente o tras corregir y volver a ejecutar Continuar, mientras que editar o aplicar voz válida sólo limpia el error y permanece en DATOS DE CONTACTO.</div></td><td class="constrains"><div>step-4</div><div>step-6</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Contacto no inicia Gemini ni exige phone o company; el guardado normalizado es una operación local de frontend antes de sustituir el bloque, no una petición de red.</div></td><td class="constrains"><div>frontend</div><div>step-3</div><div>step-8</div><div>step-9</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Enter en los inputs de Contacto ejecuta exclusivamente la validación y transición de Continuar de Contacto, nunca el submit final ni un POST a lead-submitter; escribir por sí solo no evalúa Continuar.</div></td><td class="constrains"><div>step-3</div><div>step-4</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Sólo una actualización válida por voz realmente aplicada limpia el error de name; no se eluden confirmación ante conflicto manual, rechazo de datos inválidos o sesión cerrada ni bloqueo durante revisión o envío.</div></td><td class="constrains"><div>frontend</div><div>step-7</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of contacto (contacto.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-1</div></td><td class="realises"><div>W-01 — Conocer los servicios de TBO e iniciar una consulta de proyecto.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-1</div></td><td class="realises"><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-5</div></td><td class="realises"><div>W-05 — Completar y enviar mi consulta manualmente, sin cuenta ni asistencia de voz.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-7</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-10 — Revisar mi consulta y decidir personalmente cuándo enviarla a TBO.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>correo</h2>
+<div class="picture "><p><span class="mark"></span><a href="correo.sequence.html" target="_blank">correo.sequence.html</a></p><iframe src="correo.sequence.html" title="correo.sequence.html"></iframe></div>
+<section>
+<h2>Rules of correo (correo.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>En DETALLES DEL PROYECTO la pregunta activa es Correo Corporativo y se conservan name, phone y company en estado, permitiendo tanto dominios personales como corporativos.</div></td><td class="constrains"><div>step-1</div><div>step-2</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Cada pulsación de Continuar calcula email.trim(); si está vacío muestra Requerido y no avanza, antes de comprobar formato.</div></td><td class="constrains"><div>step-3</div><div>step-4</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Si email.trim() no está vacío y no cumple /^[^\s@]+@[^\s@]+\.[^\s@]+$/ al pulsar Continuar, se muestra Email inválido y no se avanza.</div></td><td class="constrains"><div>step-7</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Editar email manualmente o aplicar una actualización válida aceptada de llenar_campo limpia el error activo Requerido o Email inválido sin avanzar de paso, completar la fila ni cambiar pregunta; sigue siendo necesaria otra pulsación de Continuar.</div></td><td class="constrains"><div>step-5</div><div>step-6</div><div>step-9</div><div>step-10</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Si email.trim() no está vacío y cumple /^[^\s@]+@[^\s@]+\.[^\s@]+$/ al pulsar Continuar, se persiste en estado email = email.trim() conservando name, phone y company, y después Correo se renderiza como fila compacta sobre Pregunta 1 projectType; la validación no depende de HTML5 y no convierte el correo a minúsculas.</div></td><td class="constrains"><div>step-11</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Las ramas 2, 3 y 4 son mutuamente excluyentes por cada pulsación de Continuar; la válida puede ocurrir directamente o tras editar y volver a pulsar, sin tener que recorrer ambos errores.</div></td><td class="constrains"><div>step-3</div><div>step-7</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Ante errores o edición se conservan los datos previos de contacto y la captura manual no necesita Gemini; el guardado normalizado es local en frontend, no una petición de red.</div></td><td class="constrains"><div>frontend</div><div>step-4</div><div>step-8</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>La fila compacta limita visualmente el valor al 55% del ancho disponible para su valor y usa ellipsis para valores largos, sin recortar el string completo guardado en estado ni el usado por el brief y el payload.</div></td><td class="constrains"><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>La actualización por voz sólo limpia error si el valor válido se aplica realmente: se mantienen confirmación previa para conflicto manual y rechazo sin mutación para datos inválidos, sesiones cerradas o revisión/envío bloqueados.</div></td><td class="constrains"><div>frontend</div><div>step-6</div><div>step-10</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of correo (correo.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-5</div></td><td class="realises"><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-8</div></td><td class="realises"><div>W-04 — Añadir un mensaje opcional y obtener un resumen de mi consulta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-7</div></td><td class="realises"><div>W-05 — Completar y enviar mi consulta manualmente, sin cuenta ni asistencia de voz.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>envio</h2>
+<div class="picture "><p><span class="mark"></span><a href="envio.sequence.html" target="_blank">envio.sequence.html</a></p><iframe src="envio.sequence.html" title="envio.sequence.html"></iframe></div>
+<section>
+<h2>Rules of envio (envio.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Antes de confirmar se revisó el brief, la voz está cerrada y la IA bloqueada; frontend establece pending y bloqueo de nuevas pulsaciones antes de iniciar POST y el plazo local de 10 segundos.</div></td><td class="constrains"><div>step-1</div><div>step-2</div><div>step-3</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Los segmentos A, B y C son resultados alternativos de un intento; no se ejecutan consecutivamente y el bloqueo local de UI no garantiza idempotencia ni deduplicación extremo a extremo.</div></td><td class="constrains"><div>step-3</div><div>step-4</div><div>step-8</div><div>step-14</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Payload inválido produce registro de rechazo sin PII mediante structured-log-sink y respuesta 4xx sin invocar webhook; frontend conserva el brief, libera pending y pide corregir el dato.</div></td><td class="constrains"><div>step-4</div><div>step-5</div><div>step-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>La corrección de datos vuelve a captura conservando los demás valores y requiere nueva revisión antes de enviar, mientras que el reintento sin cambios reutiliza directamente el brief previamente revisado.</div></td><td class="constrains"><div>step-7</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>En rama B el POST puede fallar antes de llegar al backend: los pasos de webhook, log backend y respuesta HTTP sólo ocurren si el servidor recibió la solicitud y observó ese fallo; no se inventa un evento Loki para una petición nunca recibida.</div></td><td class="constrains"><div>step-8</div><div>step-9</div><div>step-10</div><div>step-11</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Si el webhook devuelve 5xx o su operación vence, lead-submitter registra el fallo técnico observado sin PII y responde error si puede; si la red falla o se cumplen los 10 segundos locales, frontend aborta la espera o petición local, conserva el brief íntegro, libera pending y habilita reintento directo.</div></td><td class="constrains"><div>step-9</div><div>step-10</div><div>step-11</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Abortar a los 10 segundos no demuestra cancelación de procesamiento backend ni que el lead no fue entregado; no se promete deduplicación en el reintento y el estado de entrega anterior puede ser incierto.</div></td><td class="constrains"><div>step-2</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>Sólo tras validar y obtener confirmación de recepción de la integración, lead-submitter registra éxito técnico sin PII y devuelve 202 Accepted; el encaminamiento al destino no demuestra persistencia final ni seguimiento comercial completado.</div></td><td class="constrains"><div>step-14</div><div>step-15</div><div>step-16</div><div>step-17</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Ante 202 frontend libera pending, cancela el temporizador y mantiene confirmación definitiva de solicitud aceptada y envío cerrado, sin reset automático a los 3500 ms ni repetición automática del envío.</div></td><td class="constrains"><div>step-18</div><div>step-19</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>Los registros structured-log-sink no contienen PII ni el payload, correo, nombre, teléfono, empresa o texto del brief, y no sustituyen el registro comercial; la ausencia de PII aplica tanto a rechazo como fallo y éxito.</div></td><td class="constrains"><div>step-4</div><div>step-10</div><div>step-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Al resolver el intento por 4xx, 5xx, red o timeout se libera pending y se cancela el temporizador; cualquier respuesta tardía de ese intento no debe reemplazar el estado visible de un nuevo intento.</div></td><td class="constrains"><div>step-5</div><div>step-11</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-12</div></td><td class="statement"><div>Los envíos a Loki mediante structured-log-sink son best-effort, no bloqueantes y fail-open: fallo o lentitud del sink no retrasa ni cambia la respuesta comercial y nunca convierte una recepción confirmada por webhook en error en vez de 202 Accepted.</div></td><td class="constrains"><div>step-4</div><div>step-10</div><div>step-17</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-13</div></td><td class="statement"><div>lead-submitter aplica a cada llamada de Lead Webhook un timeout upstream acotado de como máximo 10 segundos y termina su espera al vencer; el valor operativo se concretará en diseño sin prometer cancelación del trabajo remoto ya recibido ni deduplicación de leads.</div></td><td class="constrains"><div>step-8</div><div>step-9</div><div>step-14</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-14</div></td><td class="statement"><div>Un 5xx es respuesta HTTP síncrona y la confirmación de recepción es su retorno; un timeout upstream es un resultado local de la espera de lead-submitter, no un callback ni necesariamente una respuesta HTTP enviada por webhook.</div></td><td class="constrains"><div>step-9</div><div>step-16</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-15</div></td><td class="statement"><div>Frontend emite fallos de red y timeout local de 10 segundos por browser-telemetry-sink a Faro sin PII ni payload y de modo best-effort sin bloquear conservación del brief, liberación de pending o reintento; esa observabilidad no depende de que el POST haya llegado al backend.</div></td><td class="constrains"><div>frontend</div><div>grafana-faro</div><div>client-failure-telemetry</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-16</div></td><td class="statement"><div>Reintentar directamente el mismo brief vuelve a ejecutar el segmento 1 con una nueva confirmación explícita, pending, bloqueo UI, POST y temporizador nuevo de 10 segundos; no reutiliza el estado pendiente ni temporizador del intento anterior.</div></td><td class="constrains"><div>step-13</div><div>step-1</div><div>step-2</div><div>step-3</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of envio (envio.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-1</div></td><td class="realises"><div>W-10 — Revisar mi consulta y decidir personalmente cuándo enviarla a TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-3</div></td><td class="realises"><div>W-11 — Evitar envíos adicionales mientras mi solicitud está pendiente de respuesta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-12 — Hacer llegar al destino comercial únicamente solicitudes validadas por TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-13 — Recibir confirmación clara de aceptación, sin promesas de seguimiento comercial completado.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-14 — Conservar mi consulta ante fallos para poder corregirla o reintentar enviarla.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-15</div></td><td class="realises"><div>W-15 — Recibir solicitudes con contacto y contexto útiles para el seguimiento comercial.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-10</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-1</div></td><td class="realises"><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>mensaje-brief</h2>
+<div class="picture "><p><span class="mark"></span><a href="mensaje-brief.sequence.html" target="_blank">mensaje-brief.sequence.html</a></p><iframe src="mensaje-brief.sequence.html" title="mensaje-brief.sequence.html"></iframe></div>
+<section>
+<h2>Rules of mensaje-brief (mensaje-brief.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>La pregunta ¿Algo más que quieras contarnos? usa textarea de 3 filas, es opcional y Enter introduce salto de línea sin submit ni avance; sólo pulsar Continuar inicia revisión.</div></td><td class="constrains"><div>step-1</div><div>step-2</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Al continuar se persiste message = message.trim(); antes de renderizar la vista de resumen previo al envío (TU BRIEF) se cierra la sesión WSS si existe, se detienen micrófono y audio, se limpian recursos de voz y se bloquea llenar_campo sin encolar cambios.</div></td><td class="constrains"><div>step-2</div><div>step-3</div><div>step-4</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>TU BRIEF muestra exactamente nueve filas ordenadas name, phone, company, email, projectType, budget, timeline, industry y message, con etiquetas humanas y traducción a valores legibles de los códigos internos; opcionales vacíos muestran Sin especificar.</div></td><td class="constrains"><div>step-4</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Volver a captura conserva los nueve campos y no reinicia voz automáticamente; usarla requiere una nueva pulsación explícita del micrófono y el flujo voz-inicio.</div></td><td class="constrains"><div>step-5</div><div>step-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Al solicitar revisar tras editar, frontend revalida name.trim() no vacío y email.trim() con /^[^\s@]+@[^\s@]+\.[^\s@]+$/; nombre vacío o correo vacío muestran Requerido y correo no vacío con formato inválido muestra Email inválido, reteniendo la captura y los demás datos.</div></td><td class="constrains"><div>step-7</div><div>step-8</div><div>step-9</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Editar datos o limpiar errores no avanza automáticamente a revisión; se solicita revisar de nuevo y las ramas inválida y válida son alternativas por cada solicitud de revisión.</div></td><td class="constrains"><div>step-7</div><div>step-8</div><div>step-9</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Con obligatorios válidos se conservan las normalizaciones acordadas name = name.trim(), email = email.trim() y message = message.trim(), sin perder phone, company ni respuestas opcionales; si se reactivó voz se cierra otra vez y se detienen micrófono/audio antes del brief actualizado.</div></td><td class="constrains"><div>step-7</div><div>step-10</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>Sólo con TU BRIEF visible, voz cerrada e IA bloqueada, ENVIAR SOLICITUD entra en la secuencia envio; aquí no se realiza un segundo envío ni se duplica su ciclo pending, bloqueo UI, POST y timeout.</div></td><td class="constrains"><div>step-11</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>El regreso a captura del segmento 2 es opcional y puede repetirse; si el visitante no pide corregir pasa de TU BRIEF a confirmación sin recorrer pasos de edición o revalidación posterior a edición.</div></td><td class="constrains"><div>step-4</div><div>step-5</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>Las llamadas a Gemini dibujan cierre sólo si existe sesión; detener micrófono/audio y bloquear actualizaciones son acciones locales de frontend y no mensajes enviados a Gemini ni permisos de envío autónomo.</div></td><td class="constrains"><div>step-3</div><div>step-10</div><div>frontend</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of mensaje-brief (mensaje-brief.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-5</div></td><td class="realises"><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-04 — Añadir un mensaje opcional y obtener un resumen de mi consulta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-10</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-12</div></td><td class="realises"><div>W-10 — Revisar mi consulta y decidir personalmente cuándo enviarla a TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-4</div></td><td class="realises"><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-2</div></td><td class="realises"><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>preguntas-proyecto</h2>
+<div class="picture "><p><span class="mark"></span><a href="preguntas-proyecto.sequence.html" target="_blank">preguntas-proyecto.sequence.html</a></p><iframe src="preguntas-proyecto.sequence.html" title="preguntas-proyecto.sequence.html"></iframe></div>
+<section>
+<h2>Rules of preguntas-proyecto (preguntas-proyecto.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Las cuatro preguntas son pasos progresivos con un selector desplegable de opciones (GlassSelect) con catálogo cerrado, no entradas libres ni una validación en bloque al final; sólo se presenta una pregunta activa y las anteriores confirmadas quedan apiladas encima.</div></td><td class="constrains"><div>step-1</div><div>step-9</div><div>step-11</div><div>step-13</div><div>step-15</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>GlassSelect usa combobox/listbox y abre con clic, Enter, Espacio o ArrowDown; sus flechas desplazan opciones sin wrap y Escape o mousedown fuera cierra sin cambiar pregunta ni estado ni avanzar.</div></td><td class="constrains"><div>step-2</div><div>step-3</div><div>step-4</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Seleccionar una opción del catálogo mediante clic o Enter guarda su código interno en estado y su etiqueta humana en una fila compacta y auto-avanza inmediatamente sin botón Continuar ni segunda confirmación.</div></td><td class="constrains"><div>step-5</div><div>step-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Las filas previas muestran etiquetas y valores humanos con ellipsis al 55% sólo visual; no se recorta el código ni el dato completo en estado y se mantienen las respuestas ya confirmadas.</div></td><td class="constrains"><div>step-1</div><div>step-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Prefiero no decir / Siguiente conserva el campo como string vacío &quot;&quot;, mantiene respuestas previas y avanza sin añadir fila compacta; sólo las respondidas se apilan sobre la pregunta activa y Sin especificar se muestra al llegar a la vista de resumen previo al envío (TU BRIEF).</div></td><td class="constrains"><div>step-7</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Cada pregunta recorre la interacción común del segmento 1 y elige exactamente la rama 2 o 3; no es obligatorio cerrar, seleccionar y omitir en cada pregunta, y abrir o cerrar por sí solo nunca avanza.</div></td><td class="constrains"><div>step-1</div><div>step-4</div><div>step-6</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Los catálogos exactos suministrados por el cliente son projectType = landing | ecommerce | webapp | redesign | automation | other; budget = lt10k | 10to20k | 20to30k | quote; timeline = urgent | 1to3 | 3to6 | flexible; industry = retail | health | education | realestate | tech | services | other.</div></td><td class="constrains"><div>step-9</div><div>step-11</div><div>step-13</div><div>step-15</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>El orden es P1 projectType, P2 budget, P3 timeline y P4 industry; completar u omitir P4 presenta ¿Algo más que quieras contarnos? para message y entra en mensaje-brief.</div></td><td class="constrains"><div>step-9</div><div>step-11</div><div>step-13</div><div>step-15</div><div>step-16</div><div>step-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Una llamada externa o de voz llenar_campo con valor fuera del catálogo del campo se rechaza inmediatamente sin mutar formulario ni brief; si sesión/canal siguen activos se responde error correlacionado, manteniendo la política de rechazo de sesiones cerradas y de conflicto manual.</div></td><td class="constrains"><div>frontend</div><div>step-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>La selección o la omisión no inicia envío de solicitud ni precisa Gemini; las reglas de bloqueo IA durante revisión/envío siguen vigentes.</div></td><td class="constrains"><div>step-5</div><div>step-7</div><div>step-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Al avanzar por selección u omisión entre P1, P2, P3, P4 y al salir a Mensaje, GlassSelect cierra el listbox y reinicia highlightedIndex para no heredar apertura ni opción resaltada de la pregunta anterior; el índice inicial concreto se precisará en diseño.</div></td><td class="constrains"><div>step-6</div><div>step-8</div><div>step-10</div><div>step-12</div><div>step-14</div><div>step-16</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of preguntas-proyecto (preguntas-proyecto.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-1</div></td><td class="realises"><div>W-03 — Describir mi proyecto mediante preguntas sencillas, pudiendo omitir información opcional.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-17</div></td><td class="realises"><div>W-04 — Añadir un mensaje opcional y obtener un resumen de mi consulta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-10</div></td><td class="realises"><div>W-05 — Completar y enviar mi consulta manualmente, sin cuenta ni asistencia de voz.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>recorrido-general</h2>
+<div class="picture "><p><span class="mark"></span><a href="recorrido-general.sequence.html" target="_blank">recorrido-general.sequence.html</a></p><iframe src="recorrido-general.sequence.html" title="recorrido-general.sequence.html"></iframe></div>
+<section>
+<h2>Rules of recorrido-general (recorrido-general.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Esta es una vista integradora auxiliar de alto nivel de las ocho secuencias funcionales, no una fuente de nuevos comportamientos ni de requisitos duplicados; cada regla detallada y su derivación se mantienen en la secuencia funcional que la define.</div></td><td class="constrains"><div>macro-1</div><div>macro-8</div><div>macro-11</div><div>macro-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Las rutas manual y voz del segmento 2 son alternativas que pueden alternarse y alimentar el mismo estado compartido: la manual es completa sin Gemini, y la ruta de voz sólo se inicia por decisión explícita del visitante y sus pasos son condicionales.</div></td><td class="constrains"><div>macro-3</div><div>macro-4</div><div>macro-6</div><div>macro-7</div><div>macro-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Captura manual y progresión se detallan en contacto, correo y preguntas-proyecto; aquí no se repiten validaciones, catálogos ni guardas de teclado.</div></td><td class="constrains"><div>macro-3</div><div>macro-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>La emisión y sus errores se detallan en voz-inicio: permiso antes de token, token-issuer usa gemini-token-source con la clave en servidor y devuelve credencial nueva de un uso; la omisión de ese subintercambio en esta vista no implica que token-issuer genere por sí solo la credencial ni que la clave llegue al navegador.</div></td><td class="constrains"><div>macro-4</div><div>macro-5</div><div>macro-6</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>La sesión WSS directa, tool calls, confirmaciones manuales y recuperación se detallan en voz-campos y voz-cierre; la voz no envía automáticamente el lead y su fallo conserva captura y permite ruta manual sin reconexión automática.</div></td><td class="constrains"><div>macro-6</div><div>macro-7</div><div>macro-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Revisión y corrección se detallan en mensaje-brief: cerrar voz activa, detener micrófono/audio y bloquear IA sin cola precede la vista de resumen previo al envío (TU BRIEF); sólo el visitante confirma enviar y editar exige volver a revisar.</div></td><td class="constrains"><div>macro-9</div><div>macro-10</div><div>macro-11</div><div>macro-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Validación y entrega se detallan en envio: inválidas no cruzan webhook y se recuperan conservando brief; la rama de entrega dibujada sólo ocurre si el backend valida, sin ruta directa navegador-webhook.</div></td><td class="constrains"><div>macro-13</div><div>macro-14</div><div>macro-15</div><div>macro-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>202 y error son alternativas: 202 confirma aceptación por integración, no persistencia final del destino ni seguimiento comercial completado; errores permiten corregir o reintentar conservando brief según envio.</div></td><td class="constrains"><div>macro-15</div><div>macro-16</div><div>macro-17</div><div>macro-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Pending, bloqueo UI, timeouts, observabilidad sin PII y variantes de error se conservan en envio, voz-inicio, voz-campos y voz-cierre sin repetirse en este mapa macro; la ausencia de Loki/Faro aquí no modifica la arquitectura ni elimina sus obligaciones.</div></td><td class="constrains"><div>macro-4</div><div>macro-7</div><div>macro-13</div><div>macro-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>El POST del brief siempre termina en lead-submitter: frontend activa pending, bloqueo de nuevas pulsaciones y timeout local de 10 segundos; sólo lead-submitter valida en servidor y sólo si es válida llama Lead Webhook, que encamina al destino.</div></td><td class="constrains"><div>macro-13</div><div>macro-14</div><div>macro-15</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Al entrar ya se presentan DATOS DE CONTACTO y panel de voz con orbe en reposo (solving); no hay un paso adicional obligatorio de elegir una ruta antes de mostrar el formulario y ambas vías alimentan el estado compartido.</div></td><td class="constrains"><div>macro-1</div><div>macro-2</div><div>macro-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-12</div></td><td class="statement"><div>Gemini emite toolCall llenar_campo hacia frontend y éste responde toolResponse al mismo canal, aplicando cambios a formulario y brief sólo cuando son aceptados por las reglas detalladas en voz-campos; los rechazos también reciben la resolución que corresponda sin mutar estado.</div></td><td class="constrains"><div>macro-7</div><div>macro-tool-response</div><div>macro-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-13</div></td><td class="statement"><div>token-issuer y lead-submitter emiten eventos técnicos a Grafana Loki por structured-log-sink y frontend a Grafana Faro por browser-telemetry-sink, sin PII, audio, claves ni credenciales y best-effort no bloqueante; estas notas no añaden pasos comerciales ni eliminan las reglas fail-open de las secuencias detalladas.</div></td><td class="constrains"><div>macro-4</div><div>macro-13</div><div>macro-tool-response</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of recorrido-general (recorrido-general.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-1</div></td><td class="realises"><div>W-01 — Conocer los servicios de TBO e iniciar una consulta de proyecto.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div><div>W-03 — Describir mi proyecto mediante preguntas sencillas, pudiendo omitir información opcional.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-11</div></td><td class="realises"><div>W-04 — Añadir un mensaje opcional y obtener un resumen de mi consulta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-3</div></td><td class="realises"><div>W-05 — Completar y enviar mi consulta manualmente, sin cuenta ni asistencia de voz.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-8</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-4</div></td><td class="realises"><div>W-07 — Activar voluntariamente la asistencia de voz de forma segura y privada.</div><div>W-21 — Controlar cada inicio de voz y evitar intentos automáticos innecesarios.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-12</div></td><td class="realises"><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-12</div></td><td class="realises"><div>W-10 — Revisar mi consulta y decidir personalmente cuándo enviarla a TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-13</div></td><td class="realises"><div>W-11 — Evitar envíos adicionales mientras mi solicitud está pendiente de respuesta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-14</div></td><td class="realises"><div>W-12 — Hacer llegar al destino comercial únicamente solicitudes validadas por TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-17</div></td><td class="realises"><div>W-13 — Recibir confirmación clara de aceptación, sin promesas de seguimiento comercial completado.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-8</div></td><td class="realises"><div>W-14 — Conservar mi consulta ante fallos para poder corregirla o reintentar enviarla.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>macro-15</div></td><td class="realises"><div>W-15 — Recibir solicitudes con contacto y contexto útiles para el seguimiento comercial.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-13</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-5</div></td><td class="realises"><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>tbo-capture</h2>
+<div class="picture "><p><span class="mark"></span><a href="tbo-capture.architecture.html" target="_blank">tbo-capture.architecture.html</a></p><iframe src="tbo-capture.architecture.html" title="tbo-capture.architecture.html"></iframe></div>
+<section>
+<h2>Rules of tbo-capture (tbo-capture.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>La clave permanente permanece en token-issuer y la voz conecta frontend directamente con Gemini mediante credencial temporal.</div></td><td class="constrains"><div>frontend</div><div>token-issuer</div><div>gemini-live</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>La captura manual no depende de Gemini y sólo el visitante confirma el envío del brief revisado.</div></td><td class="constrains"><div>frontend</div><div>lead-request</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>El navegador nunca entrega directamente al webhook y lead-submitter valida antes del destino externo.</div></td><td class="constrains"><div>frontend</div><div>lead-submitter</div><div>lead-webhook</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>El frontend conserva el brief y permite recuperar errores de red, validación, 5xx o timeout local de envío de 10 segundos sin interpretar timeout como respuesta HTTP ni garantizar que el servidor no recibió la solicitud.</div></td><td class="constrains"><div>frontend</div><div>lead-request</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>composition-root, documentado en las cards, instancia y conecta los módulos y adaptadores de los siete puertos dentro de la frontera servidor sin ser un nodo de red del flujo comercial.</div></td><td class="constrains"><div>token-issuer</div><div>lead-submitter</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Faro y Loki son sistemas externos de observabilidad y sus eventos no sustituyen el registro comercial del lead.</div></td><td class="constrains"><div>grafana-faro</div><div>grafana-loki</div><div>browser-events</div><div>token-logs</div><div>lead-logs</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>La flecha única señala al iniciador y la etiqueta resume ambos sentidos del intercambio; en WSS llenar_campo viaja desde Gemini a frontend y toolResponse vuelve a Gemini.</div></td><td class="constrains"><div>voice-channel</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of tbo-capture (tbo-capture.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>capture</div></td><td class="realises"><div>W-01 — Conocer los servicios de TBO e iniciar una consulta de proyecto.</div><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div><div>W-03 — Describir mi proyecto mediante preguntas sencillas, pudiendo omitir información opcional.</div><div>W-04 — Añadir un mensaje opcional y obtener un resumen de mi consulta.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-2</div></td><td class="realises"><div>W-05 — Completar y enviar mi consulta manualmente, sin cuenta ni asistencia de voz.</div><div>W-10 — Revisar mi consulta y decidir personalmente cuándo enviarla a TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>voice-channel</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-1</div></td><td class="realises"><div>W-07 — Activar voluntariamente la asistencia de voz de forma segura y privada.</div><div>W-21 — Controlar cada inicio de voz y evitar intentos automáticos innecesarios.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-4</div></td><td class="realises"><div>W-09 — Entender los fallos de voz y poder continuar de forma controlada.</div><div>W-14 — Conservar mi consulta ante fallos para poder corregirla o reintentar enviarla.</div><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>lead-request</div></td><td class="realises"><div>W-11 — Evitar envíos adicionales mientras mi solicitud está pendiente de respuesta.</div><div>W-13 — Recibir confirmación clara de aceptación, sin promesas de seguimiento comercial completado.</div><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-12 — Hacer llegar al destino comercial únicamente solicitudes validadas por TBO.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>external-routing</div></td><td class="realises"><div>W-15 — Recibir solicitudes con contacto y contexto útiles para el seguimiento comercial.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-5</div></td><td class="realises"><div>W-18 — Mantener responsabilidades separadas y una solución sencilla, sin almacenamiento propio.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>voz-campos</h2>
+<div class="picture "><p><span class="mark"></span><a href="voz-campos.sequence.html" target="_blank">voz-campos.sequence.html</a></p><iframe src="voz-campos.sequence.html" title="voz-campos.sequence.html"></iframe></div>
+<section>
+<h2>Rules of voz-campos (voz-campos.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Con WSS activo y orbe escuchando (listening), frontend envía audio del visitante por voice-session-channel y Gemini puede devolver audio del asistente y/o toolCall llenar_campo con id, campo y valor; una recepción no implica que el dato se haya aplicado.</div></td><td class="constrains"><div>step-1</div><div>step-2</div><div>step-3</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Los segmentos A, B y C describen alternativas condicionadas por estado y evento, no una secuencia obligatoria: por cada toolCall se elige una sola resolución y no se envían ok, rejected y error para la misma resolución.</div></td><td class="constrains"><div>step-5</div><div>step-9</div><div>step-11</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>En captura activa y sesión vigente, un campo y valor válidos sin edición manual previa se normalizan mediante trim() para texto o código exacto del catálogo, se guardan, limpian el error previo de ese campo y se reflejan en el estado compartido de formulario y brief antes de toolResponse(id, ok).</div></td><td class="constrains"><div>step-4</div><div>step-5</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Si existe edición manual previa del campo, se conserva hasta confirmación del visitante: aceptar permite actualizar normalizado, limpiar error y responder ok, mientras rechazar mantiene la edición intacta y responde rejected con el mismo id para no dejar esa llamada sin resolución.</div></td><td class="constrains"><div>step-6</div><div>step-7</div><div>step-8</div><div>step-9</div><div>step-10</div><div>step-11</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Campo desconocido, name.trim() vacío, email.trim() que no cumpla /^[^\s@]+@[^\s@]+\.[^\s@]+$/ o código fuera de los catálogos exactos de preguntas-proyecto INV-7 se rechazan al recibirlos sin mutar formulario ni brief y con toolResponse(id, error) sólo si el canal de la sesión vigente sigue abierto.</div></td><td class="constrains"><div>step-3</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Eventos de sesiones cerradas se descartan sin mutación ni respuesta por socket cerrado o por una nueva sesión; durante la vista de resumen previo al envío (TU BRIEF) o pending se descartan sin cola, se mantiene bloqueo IA y se cierra la voz según lo acordado.</div></td><td class="constrains"><div>step-14</div><div>frontend</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Antes de aplicar una confirmación pendiente se comprueba que la captura y la sesión siguen vigentes; un cierre o cambio a revisión/envío no queda invalidado por una aceptación tardía y no autoriza mutación ni respuesta por otro socket.</div></td><td class="constrains"><div>step-7</div><div>step-8</div><div>step-9</div><div>step-14</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>Ante caída WSS, error de cuota reportado o apagado manual, frontend cierra el WSS que exista, detiene micrófono y audio, limpia recursos y deja el orbe en reposo (solving), conservando los datos ya capturados y el formulario manual completo disponible.</div></td><td class="constrains"><div>step-15</div><div>step-16</div><div>step-17</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Fallo y apagado son disparadores alternativos del mismo cierre; no hay reconexión automática y volver a usar voz requiere otra pulsación que entra en voz-inicio, sin prometer cifras de cuota Free Tier ni liberación inmediata de recursos remotos.</div></td><td class="constrains"><div>step-15</div><div>step-16</div><div>step-20</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>Frontend emite telemetría técnica por browser-telemetry-sink a Faro sin PII, payload de campos ni audio, de modo best-effort y no bloqueante; un fallo del sink no bloquea cierre, conservación de datos ni recuperación manual.</div></td><td class="constrains"><div>step-18</div><div>step-19</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Aplicar realmente name o email válido por voz limpia Requerido o Email inválido según corresponda sin avanzar automáticamente de Contacto o Correo; se requiere ejecutar el Continuar de ese paso y respetar guard contra submit final.</div></td><td class="constrains"><div>step-4</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-12</div></td><td class="statement"><div>El payload técnico final de la herramienta se precisará en diseño; los catálogos de projectType, budget, timeline e industry ya fueron suministrados expresamente por el cliente, no se derivan de ejemplos no aprobados.</div></td><td class="constrains"><div>step-3</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-13</div></td><td class="statement"><div>Si la voz se cierra por fallo, apagado o paso a revisión mientras existe una confirmación de conflicto manual pendiente, ésta se cancela automáticamente y conserva el dato manual; no puede reactivarse por una aceptación tardía ni aplicarse o responder a través de una sesión nueva.</div></td><td class="constrains"><div>step-7</div><div>step-14</div><div>late-call-discard</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-14</div></td><td class="statement"><div>Al aplicar realmente una actualización válida de catálogo por voz se guarda su código y se apila su etiqueta humana, no el código interno, cerrando el selector desplegable de opciones (GlassSelect) si estaba abierto; se mantienen confirmación por conflicto, catálogos exactos y bloqueo durante revisión/envío.</div></td><td class="constrains"><div>step-4</div><div>step-8</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of voz-campos (voz-campos.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-11</div></td><td class="realises"><div>W-02 — Compartir mis datos de contacto para que TBO pueda responderme.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-14</div></td><td class="realises"><div>W-03 — Describir mi proyecto mediante preguntas sencillas, pudiendo omitir información opcional.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-8</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-4</div></td><td class="realises"><div>W-08 — Ver reflejada en el formulario la información aceptada del asistente.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-8</div></td><td class="realises"><div>W-09 — Entender los fallos de voz y poder continuar de forma controlada.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-10</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-18</div></td><td class="realises"><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-21 — Controlar cada inicio de voz y evitar intentos automáticos innecesarios.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>voz-cierre</h2>
+<div class="picture "><p><span class="mark"></span><a href="voz-cierre.sequence.html" target="_blank">voz-cierre.sequence.html</a></p><iframe src="voz-cierre.sequence.html" title="voz-cierre.sequence.html"></iframe></div>
+<section>
+<h2>Rules of voz-cierre (voz-cierre.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Apagar micrófono o entrar a la vista de resumen previo al envío (TU BRIEF) cierra la conexión WSS existente, llama MediaStreamTrack.stop() en las pistas de micrófono, detiene audio y limpia recursos locales, deja el orbe en reposo (solving) y conserva los datos capturados.</div></td><td class="constrains"><div>step-1</div><div>step-2</div><div>step-3</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Todo cierre intencional o por fallo cancela confirmaciones de conflicto manual pendientes conservando el dato manual; una aceptación tardía no puede revivirlas ni aplicar datos por una nueva sesión.</div></td><td class="constrains"><div>step-3</div><div>step-7</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Entrar a TU BRIEF mantiene IA y llenar_campo bloqueados sin cola; apagar voz en captura deja disponible la escritura manual sin convertir por sí solo esa vista en revisión.</div></td><td class="constrains"><div>step-1</div><div>step-13</div><div>step-14</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>Fallo de credencial, fallo de inicio, caída de red, GoAway o error de cuota/concurrencia son alternativas: cierran el WSS si existe y recursos parcialmente adquiridos, detienen micrófono/audio, dejan el orbe en reposo (solving) y muestran aviso recuperable preservando datos y ruta manual, sin reconectar automáticamente.</div></td><td class="constrains"><div>step-5</div><div>step-6</div><div>step-7</div><div>step-8</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>La mención del cliente al límite de 3 sesiones Free Tier describe un supuesto de error de cuota a cubrir y no una cifra vigente comprobada aquí; no se promete liberación inmediata de cuota remota por el cierre local.</div></td><td class="constrains"><div>step-6</div><div>step-7</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Faro recibe sólo evento técnico mediante browser-telemetry-sink sin PII, valores de campos, payload ni audio; best-effort, no bloqueante y fail-open, de modo que un fallo de telemetría no impida cierre ni continuación manual.</div></td><td class="constrains"><div>step-8</div><div>step-9</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>Audio y llenar_campo tardíos durante o después del cierre se descartan sin reproducir audio, mutar formulario o brief ni encolar cambios; no se envía toolResponse por socket cerrado ni se responde a una llamada antigua por otra sesión nueva.</div></td><td class="constrains"><div>step-11</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>Continuar escribiendo o volver desde TU BRIEF para corregir conserva los campos y deja voz cerrada con orbe en reposo (solving); no solicita token ni abre WSS hasta nueva pulsación explícita y los cambios manuales requieren nueva revisión antes de enviar.</div></td><td class="constrains"><div>step-13</div><div>step-14</div><div>step-15</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Una nueva pulsación vuelve al flujo voz-inicio con permiso y disponibilidad de micrófono antes de llamar token-issuer, bloqueo de activaciones mientras el inicio está pendiente y como máximo una solicitud de token y un intento WSS sin reintentos automáticos.</div></td><td class="constrains"><div>step-15</div><div>step-16</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>Cada nueva activación solicita credencial efímera nueva con intención de un uso uses:1 sin reutilizar el token ya consumido; el retorno token o error y sesión lista o fallo son ramas alternativas y el error detiene el camino de éxito y vuelve a cierre/recuperación.</div></td><td class="constrains"><div>step-16</div><div>step-17</div><div>step-18</div><div>step-19</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Sólo con nueva sesión lista frontend aporta los campos ya capturados como contexto del canal de voz, sin reiniciar ni sobrescribir estado compartido y respetando confirmación de ediciones manuales; esos campos no se incluyen en telemetría ni se requiere enviarlos a token-issuer para crear la credencial.</div></td><td class="constrains"><div>step-19</div><div>step-20</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-12</div></td><td class="statement"><div>El segmento 1 y el 2 son disparadores alternativos de cierre, el 3 protege ante eventos tardíos y el 4 es continuación opcional; no es obligatorio fallar, recibir evento tardío ni reactivar voz tras cada cierre.</div></td><td class="constrains"><div>step-1</div><div>step-5</div><div>step-11</div><div>step-15</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of voz-cierre (voz-cierre.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-11</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-10</div></td><td class="realises"><div>W-07 — Activar voluntariamente la asistencia de voz de forma segura y privada.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-4</div></td><td class="realises"><div>W-09 — Entender los fallos de voz y poder continuar de forma controlada.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-8</div></td><td class="realises"><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-21 — Controlar cada inicio de voz y evitar intentos automáticos innecesarios.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-22 — Revisar un resumen estable y poder volver a corregirlo sin perder información.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<h2>voz-inicio</h2>
+<div class="picture "><p><span class="mark"></span><a href="voz-inicio.sequence.html" target="_blank">voz-inicio.sequence.html</a></p><iframe src="voz-inicio.sequence.html" title="voz-inicio.sequence.html"></iframe></div>
+<section>
+<h2>Rules of voz-inicio (voz-inicio.invariants.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Rule</th><th>Statement</th><th>Constrains</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-1</div></td><td class="statement"><div>Una pulsación explícita en captura marca inicio pendiente y bloquea activaciones concurrentes antes de getUserMedia; otras pulsaciones mientras el inicio está pendiente no solicitan tokens ni abren conexiones adicionales.</div></td><td class="constrains"><div>step-1</div><div>step-2</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-2</div></td><td class="statement"><div>Sin permiso concedido o sin micrófono disponible no se llama token-issuer ni Gemini, se libera bloqueo, se mantiene el orbe en reposo (solving) y formulario manual completo; no hay llamada de emisión ni sesión de Gemini que consuma cuota por ese intento.</div></td><td class="constrains"><div>step-3</div><div>step-4</div><div>step-5</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-3</div></td><td class="statement"><div>Sólo con acceso al micrófono frontend solicita token por token-issuance-api; token-issuer conserva la clave permanente en servidor y usa gemini-token-source para obtener credencial efímera de un uso uses:1 con ventana newSessionExpireTime configurada.</div></td><td class="constrains"><div>step-5</div><div>step-6</div><div>step-7</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-4</div></td><td class="statement"><div>La duración y semántica exacta del token y newSessionExpireTime se verificarán contra documentación oficial al definir contratos, sin fijar aquí un minuto ni afirmar un límite Free Tier vigente de 3 sesiones o que todo 429 tenga esa causa.</div></td><td class="constrains"><div>step-6</div><div>step-15</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-5</div></td><td class="statement"><div>Los logs de emisión y fallo mediante structured-log-sink son async, best-effort, no bloqueantes y fail-open, sin PII, valores de campos, token ni clave; lentitud o error Loki no retrasa ni cambia la respuesta HTTP de credencial.</div></td><td class="constrains"><div>step-8</div><div>step-9</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-6</div></td><td class="statement"><div>Con token válido frontend abre directamente WSS con Gemini por voice-session-channel, sin proxy del audio en backend propio, usando como máximo una credencial y un intento WSS por activación explícita, sin reintentos automáticos ni reutilización del token consumido.</div></td><td class="constrains"><div>step-10</div><div>step-16</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-7</div></td><td class="statement"><div>En la rama de éxito, antes de habilitar hablar la sesión está lista con systemInstruction y llenar_campo activos y frontend aporta contexto de campos ya capturados sin mutar los datos locales; el orbe pasa a estar escuchando (listening) con ESCUCHANDO VOZ ACTIVA y se libera el bloqueo de inicio.</div></td><td class="constrains"><div>step-11</div><div>step-12</div><div>step-13</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-8</div></td><td class="statement"><div>La forma concreta y orden de setup del SDK/protocolo y la inyección del contexto se precisarán en diseño; el diagrama expresa la precondición funcional de sesión configurada antes de habilitar voz, no prescribe mensajes wire de un proveedor sin verificar.</div></td><td class="constrains"><div>step-10</div><div>step-11</div><div>step-12</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-9</div></td><td class="statement"><div>Error de credencial y fallo de sesión o handshake por red/cuota son alternativas que detienen el camino de éxito: frontend cierra WSS si existe, detiene inmediatamente las pistas de micrófono mediante MediaStreamTrack.stop(), detiene audio y limpia recursos parcialmente adquiridos, libera bloqueo, mantiene el orbe en reposo (solving) y datos/manual disponibles, sin reconexión automática.</div></td><td class="constrains"><div>step-14</div><div>step-15</div><div>step-16</div><div>step-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-10</div></td><td class="statement"><div>El cierre por fallo cancela confirmaciones de conflicto pendientes conservando la edición manual y no envía respuestas por sockets cerrados; la nueva activación requiere otra pulsación y una credencial nueva, como se detalla en voz-cierre.</div></td><td class="constrains"><div>step-16</div><div>step-17</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-11</div></td><td class="statement"><div>Faro recibe evento técnico del fallo por browser-telemetry-sink sin PII, valores de campos ni audio; best-effort no bloqueante, su fallo no impide cleanup ni conservación de datos o continuación manual.</div></td><td class="constrains"><div>step-17</div><div>step-18</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="rule"><div>INV-12</div></td><td class="statement"><div>Denegación o ausencia de micrófono corta el segmento 1 sin pasar a emisión; token o error son alternativas y sólo el token válido llega a conexión; éxito del segmento 3 y fallo del segmento 4 son ramas excluyentes del intento.</div></td><td class="constrains"><div>step-4</div><div>step-7</div><div>step-9</div><div>step-10</div><div>step-13</div><div>step-14</div></td></tr>
+</tbody>
+</table>
+</section>
+<section>
+<h2>Wish links of voz-inicio (voz-inicio.wishes.yaml)</h2>
+<table>
+<thead><tr><th>Change</th><th>Element</th><th>Realises</th></tr></thead>
+<tbody>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-7</div></td><td class="realises"><div>W-06 — Alternar voz y escritura para completar una misma consulta y resumen.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-3</div></td><td class="realises"><div>W-07 — Activar voluntariamente la asistencia de voz de forma segura y privada.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-9</div></td><td class="realises"><div>W-09 — Entender los fallos de voz y poder continuar de forma controlada.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-11</div></td><td class="realises"><div>W-16 — Detectar fallos del servicio sin exponer información personal de los visitantes.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>step-17</div></td><td class="realises"><div>W-20 — Conservar mis datos si falla la voz y poder continuar escribiendo.</div></td></tr>
+<tr class="term"><td class="mark"></td><td class="element"><div>INV-6</div></td><td class="realises"><div>W-21 — Controlar cada inicio de voz y evitar intentos automáticos innecesarios.</div></td></tr>
+</tbody>
+</table>
+</section>
+</section>
+</body>
+</html>

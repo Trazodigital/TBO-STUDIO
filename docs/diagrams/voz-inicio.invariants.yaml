@@ -1,0 +1,72 @@
+diagram: voz-inicio
+invariants:
+- id: INV-1
+  statement: Una pulsación explícita en captura marca inicio pendiente y bloquea activaciones concurrentes antes de getUserMedia; otras pulsaciones mientras el inicio está pendiente no solicitan tokens ni abren conexiones adicionales.
+  constrains:
+  - step-1
+  - step-2
+- id: INV-2
+  statement: Sin permiso concedido o sin micrófono disponible no se llama token-issuer ni Gemini, se libera bloqueo, se mantiene el orbe en reposo (solving) y formulario manual completo; no hay llamada de emisión ni sesión de Gemini que consuma cuota por ese intento.
+  constrains:
+  - step-3
+  - step-4
+  - step-5
+- id: INV-3
+  statement: Sólo con acceso al micrófono frontend solicita token por token-issuance-api; token-issuer conserva la clave permanente en servidor y usa gemini-token-source para obtener credencial efímera de un uso uses:1 con ventana newSessionExpireTime configurada.
+  constrains:
+  - step-5
+  - step-6
+  - step-7
+- id: INV-4
+  statement: La duración y semántica exacta del token y newSessionExpireTime se verificarán contra documentación oficial al definir contratos, sin fijar aquí un minuto ni afirmar un límite Free Tier vigente de 3 sesiones o que todo 429 tenga esa causa.
+  constrains:
+  - step-6
+  - step-15
+- id: INV-5
+  statement: Los logs de emisión y fallo mediante structured-log-sink son async, best-effort, no bloqueantes y fail-open, sin PII, valores de campos, token ni clave; lentitud o error Loki no retrasa ni cambia la respuesta HTTP de credencial.
+  constrains:
+  - step-8
+  - step-9
+- id: INV-6
+  statement: Con token válido frontend abre directamente WSS con Gemini por voice-session-channel, sin proxy del audio en backend propio, usando como máximo una credencial y un intento WSS por activación explícita, sin reintentos automáticos ni reutilización del token consumido.
+  constrains:
+  - step-10
+  - step-16
+- id: INV-7
+  statement: En la rama de éxito, antes de habilitar hablar la sesión está lista con systemInstruction y llenar_campo activos y frontend aporta contexto de campos ya capturados sin mutar los datos locales; el orbe pasa a estar escuchando (listening) con ESCUCHANDO VOZ ACTIVA y se libera el bloqueo de inicio.
+  constrains:
+  - step-11
+  - step-12
+  - step-13
+- id: INV-8
+  statement: La forma concreta y orden de setup del SDK/protocolo y la inyección del contexto se precisarán en diseño; el diagrama expresa la precondición funcional de sesión configurada antes de habilitar voz, no prescribe mensajes wire de un proveedor sin verificar.
+  constrains:
+  - step-10
+  - step-11
+  - step-12
+- id: INV-9
+  statement: 'Error de credencial y fallo de sesión o handshake por red/cuota son alternativas que detienen el camino de éxito: frontend cierra WSS si existe, detiene inmediatamente las pistas de micrófono mediante MediaStreamTrack.stop(), detiene audio y limpia recursos parcialmente adquiridos, libera bloqueo, mantiene el orbe en reposo (solving) y datos/manual disponibles, sin reconexión automática.'
+  constrains:
+  - step-14
+  - step-15
+  - step-16
+  - step-17
+- id: INV-10
+  statement: El cierre por fallo cancela confirmaciones de conflicto pendientes conservando la edición manual y no envía respuestas por sockets cerrados; la nueva activación requiere otra pulsación y una credencial nueva, como se detalla en voz-cierre.
+  constrains:
+  - step-16
+  - step-17
+- id: INV-11
+  statement: Faro recibe evento técnico del fallo por browser-telemetry-sink sin PII, valores de campos ni audio; best-effort no bloqueante, su fallo no impide cleanup ni conservación de datos o continuación manual.
+  constrains:
+  - step-17
+  - step-18
+- id: INV-12
+  statement: Denegación o ausencia de micrófono corta el segmento 1 sin pasar a emisión; token o error son alternativas y sólo el token válido llega a conexión; éxito del segmento 3 y fallo del segmento 4 son ramas excluyentes del intento.
+  constrains:
+  - step-4
+  - step-7
+  - step-9
+  - step-10
+  - step-13
+  - step-14

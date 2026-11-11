@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TBO Studio — Cierre y recuperación manual",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1700,
+      1025
+    ]
+  },
+  "participants": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitante"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "frontend"
+    },
+    {
+      "id": "token-issuer",
+      "type": "backend",
+      "label": "token-issuer"
+    },
+    {
+      "id": "gemini-live",
+      "type": "external",
+      "label": "Gemini Live"
+    },
+    {
+      "id": "grafana-faro",
+      "type": "external",
+      "label": "Grafana Faro"
+    }
+  ],
+  "messages": [
+    {
+      "id": "step-1",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 180,
+      "label": "Apaga micrófono / avanza a TU BRIEF (resumen previo al envío)",
+      "variant": "default"
+    },
+    {
+      "id": "step-2",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 210,
+      "label": "Cierra WSS si está abierto",
+      "variant": "default"
+    },
+    {
+      "id": "step-3",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 240,
+      "label": "Micrófono/audio off; orbe en reposo (solving); conserva datos y cancela confirmaciones",
+      "variant": "return",
+      "note": "MediaStreamTrack.stop(), detener audio y limpiar recursos locales; cancelar confirmaciones pendientes conserva la edición manual."
+    },
+    {
+      "id": "step-5",
+      "from": "token-issuer",
+      "to": "frontend",
+      "y": 340,
+      "label": "Alternativa: fallo al obtener credencial",
+      "variant": "return"
+    },
+    {
+      "id": "step-6",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 370,
+      "label": "Alternativa: red / GoAway / error de concurrencia",
+      "variant": "default"
+    },
+    {
+      "id": "step-7",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 400,
+      "label": "Si existe WSS: cierra; limpia recursos",
+      "variant": "default"
+    },
+    {
+      "id": "step-8",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 430,
+      "label": "Error recuperable; orbe en reposo (solving); manual disponible (sin reconexión automática)",
+      "variant": "return"
+    },
+    {
+      "id": "step-9",
+      "from": "frontend",
+      "to": "grafana-faro",
+      "y": 460,
+      "label": "browser-telemetry-sink: sin PII/audio; best-effort",
+      "variant": "dashed"
+    },
+    {
+      "id": "step-11",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 560,
+      "label": "Audio / llenar_campo rezagado al cerrar",
+      "variant": "default"
+    },
+    {
+      "id": "step-12",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 590,
+      "label": "Descarta sin mutar ni encolar; no reproduce audio",
+      "variant": "return"
+    },
+    {
+      "id": "step-13",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 660,
+      "label": "Continúa manual / vuelve de TU BRIEF a captura",
+      "variant": "default"
+    },
+    {
+      "id": "step-14",
+      "from": "frontend",
+      "to": "visitor",
+      "y": 690,
+      "label": "Datos conservados; voz cerrada (solving)",
+      "variant": "return"
+    },
+    {
+      "id": "step-15",
+      "from": "visitor",
+      "to": "frontend",
+      "y": 720,
+      "label": "Si quiere voz: nueva pulsación explícita",
+      "variant": "default",
+      "note": "Reingresa en voz-inicio: permiso antes de token, bloqueo de activaciones pendientes y ningún reintento automático."
+    },
+    {
+      "id": "step-16",
+      "from": "frontend",
+      "to": "token-issuer",
+      "y": 750,
+      "label": "Sólo tras permiso: nuevo token efímero (uses: 1)",
+      "variant": "default"
+    },
+    {
+      "id": "step-17",
+      "from": "token-issuer",
+      "to": "frontend",
+      "y": 780,
+      "label": "Retorno: nueva credencial o error",
+      "variant": "return"
+    },
+    {
+      "id": "step-18",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 810,
+      "label": "Sólo con token nuevo: nueva conexión WSS",
+      "variant": "default"
+    },
+    {
+      "id": "step-19",
+      "from": "gemini-live",
+      "to": "frontend",
+      "y": 840,
+      "label": "Retorno: sesión lista o fallo",
+      "variant": "return"
+    },
+    {
+      "id": "step-20",
+      "from": "frontend",
+      "to": "gemini-live",
+      "y": 870,
+      "label": "Si lista: contexto de campos ya capturados",
+      "variant": "default",
+      "note": "Contexto al canal de voz, no a Loki/Faro; no reutiliza el token ya consumido."
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 290,
+      "label": "1 · Cierre intencional: apagar micrófono o entrar a TU BRIEF"
+    },
+    {
+      "from": 315,
+      "to": 510,
+      "label": "2 · Alternativa: fallo de inicio o desconexión — recuperación manual y Faro"
+    },
+    {
+      "from": 535,
+      "to": 610,
+      "label": "3 · Eventos tardíos durante / después del cierre"
+    },
+    {
+      "from": 635,
+      "to": 925,
+      "label": "4 · Manual / regreso a captura / nueva activación con token nuevo"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+diagram: voz-campos
+invariants:
+- id: INV-1
+  statement: Con WSS activo y orbe escuchando (listening), frontend envía audio del visitante por voice-session-channel y Gemini puede devolver audio del asistente y/o toolCall llenar_campo con id, campo y valor; una recepción no implica que el dato se haya aplicado.
+  constrains:
+  - step-1
+  - step-2
+  - step-3
+- id: INV-2
+  statement: 'Los segmentos A, B y C describen alternativas condicionadas por estado y evento, no una secuencia obligatoria: por cada toolCall se elige una sola resolución y no se envían ok, rejected y error para la misma resolución.'
+  constrains:
+  - step-5
+  - step-9
+  - step-11
+  - step-13
+- id: INV-3
+  statement: En captura activa y sesión vigente, un campo y valor válidos sin edición manual previa se normalizan mediante trim() para texto o código exacto del catálogo, se guardan, limpian el error previo de ese campo y se reflejan en el estado compartido de formulario y brief antes de toolResponse(id, ok).
+  constrains:
+  - step-4
+  - step-5
+- id: INV-4
+  statement: 'Si existe edición manual previa del campo, se conserva hasta confirmación del visitante: aceptar permite actualizar normalizado, limpiar error y responder ok, mientras rechazar mantiene la edición intacta y responde rejected con el mismo id para no dejar esa llamada sin resolución.'
+  constrains:
+  - step-6
+  - step-7
+  - step-8
+  - step-9
+  - step-10
+  - step-11
+- id: INV-5
+  statement: Campo desconocido, name.trim() vacío, email.trim() que no cumpla /^[^\s@]+@[^\s@]+\.[^\s@]+$/ o código fuera de los catálogos exactos de preguntas-proyecto INV-7 se rechazan al recibirlos sin mutar formulario ni brief y con toolResponse(id, error) sólo si el canal de la sesión vigente sigue abierto.
+  constrains:
+  - step-3
+  - step-12
+  - step-13
+- id: INV-6
+  statement: Eventos de sesiones cerradas se descartan sin mutación ni respuesta por socket cerrado o por una nueva sesión; durante la vista de resumen previo al envío (TU BRIEF) o pending se descartan sin cola, se mantiene bloqueo IA y se cierra la voz según lo acordado.
+  constrains:
+  - step-14
+  - frontend
+- id: INV-7
+  statement: Antes de aplicar una confirmación pendiente se comprueba que la captura y la sesión siguen vigentes; un cierre o cambio a revisión/envío no queda invalidado por una aceptación tardía y no autoriza mutación ni respuesta por otro socket.
+  constrains:
+  - step-7
+  - step-8
+  - step-9
+  - step-14
+- id: INV-8
+  statement: Ante caída WSS, error de cuota reportado o apagado manual, frontend cierra el WSS que exista, detiene micrófono y audio, limpia recursos y deja el orbe en reposo (solving), conservando los datos ya capturados y el formulario manual completo disponible.
+  constrains:
+  - step-15
+  - step-16
+  - step-17
+  - step-18
+- id: INV-9
+  statement: Fallo y apagado son disparadores alternativos del mismo cierre; no hay reconexión automática y volver a usar voz requiere otra pulsación que entra en voz-inicio, sin prometer cifras de cuota Free Tier ni liberación inmediata de recursos remotos.
+  constrains:
+  - step-15
+  - step-16
+  - step-20
+- id: INV-10
+  statement: Frontend emite telemetría técnica por browser-telemetry-sink a Faro sin PII, payload de campos ni audio, de modo best-effort y no bloqueante; un fallo del sink no bloquea cierre, conservación de datos ni recuperación manual.
+  constrains:
+  - step-18
+  - step-19
+- id: INV-11
+  statement: Aplicar realmente name o email válido por voz limpia Requerido o Email inválido según corresponda sin avanzar automáticamente de Contacto o Correo; se requiere ejecutar el Continuar de ese paso y respetar guard contra submit final.
+  constrains:
+  - step-4
+  - step-8
+- id: INV-12
+  statement: El payload técnico final de la herramienta se precisará en diseño; los catálogos de projectType, budget, timeline e industry ya fueron suministrados expresamente por el cliente, no se derivan de ejemplos no aprobados.
+  constrains:
+  - step-3
+  - step-12
+- id: INV-13
+  statement: Si la voz se cierra por fallo, apagado o paso a revisión mientras existe una confirmación de conflicto manual pendiente, ésta se cancela automáticamente y conserva el dato manual; no puede reactivarse por una aceptación tardía ni aplicarse o responder a través de una sesión nueva.
+  constrains:
+  - step-7
+  - step-14
+  - late-call-discard
+  - step-18
+- id: INV-14
+  statement: Al aplicar realmente una actualización válida de catálogo por voz se guarda su código y se apila su etiqueta humana, no el código interno, cerrando el selector desplegable de opciones (GlassSelect) si estaba abierto; se mantienen confirmación por conflicto, catálogos exactos y bloqueo durante revisión/envío.
+  constrains:
+  - step-4
+  - step-8

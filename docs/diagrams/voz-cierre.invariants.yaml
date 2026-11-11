@@ -1,0 +1,73 @@
+diagram: voz-cierre
+invariants:
+- id: INV-1
+  statement: Apagar micrófono o entrar a la vista de resumen previo al envío (TU BRIEF) cierra la conexión WSS existente, llama MediaStreamTrack.stop() en las pistas de micrófono, detiene audio y limpia recursos locales, deja el orbe en reposo (solving) y conserva los datos capturados.
+  constrains:
+  - step-1
+  - step-2
+  - step-3
+- id: INV-2
+  statement: Todo cierre intencional o por fallo cancela confirmaciones de conflicto manual pendientes conservando el dato manual; una aceptación tardía no puede revivirlas ni aplicar datos por una nueva sesión.
+  constrains:
+  - step-3
+  - step-7
+  - step-12
+- id: INV-3
+  statement: Entrar a TU BRIEF mantiene IA y llenar_campo bloqueados sin cola; apagar voz en captura deja disponible la escritura manual sin convertir por sí solo esa vista en revisión.
+  constrains:
+  - step-1
+  - step-13
+  - step-14
+- id: INV-4
+  statement: 'Fallo de credencial, fallo de inicio, caída de red, GoAway o error de cuota/concurrencia son alternativas: cierran el WSS si existe y recursos parcialmente adquiridos, detienen micrófono/audio, dejan el orbe en reposo (solving) y muestran aviso recuperable preservando datos y ruta manual, sin reconectar automáticamente.'
+  constrains:
+  - step-5
+  - step-6
+  - step-7
+  - step-8
+- id: INV-5
+  statement: La mención del cliente al límite de 3 sesiones Free Tier describe un supuesto de error de cuota a cubrir y no una cifra vigente comprobada aquí; no se promete liberación inmediata de cuota remota por el cierre local.
+  constrains:
+  - step-6
+  - step-7
+- id: INV-6
+  statement: Faro recibe sólo evento técnico mediante browser-telemetry-sink sin PII, valores de campos, payload ni audio; best-effort, no bloqueante y fail-open, de modo que un fallo de telemetría no impida cierre ni continuación manual.
+  constrains:
+  - step-8
+  - step-9
+- id: INV-7
+  statement: Audio y llenar_campo tardíos durante o después del cierre se descartan sin reproducir audio, mutar formulario o brief ni encolar cambios; no se envía toolResponse por socket cerrado ni se responde a una llamada antigua por otra sesión nueva.
+  constrains:
+  - step-11
+  - step-12
+- id: INV-8
+  statement: Continuar escribiendo o volver desde TU BRIEF para corregir conserva los campos y deja voz cerrada con orbe en reposo (solving); no solicita token ni abre WSS hasta nueva pulsación explícita y los cambios manuales requieren nueva revisión antes de enviar.
+  constrains:
+  - step-13
+  - step-14
+  - step-15
+- id: INV-9
+  statement: Una nueva pulsación vuelve al flujo voz-inicio con permiso y disponibilidad de micrófono antes de llamar token-issuer, bloqueo de activaciones mientras el inicio está pendiente y como máximo una solicitud de token y un intento WSS sin reintentos automáticos.
+  constrains:
+  - step-15
+  - step-16
+  - step-18
+- id: INV-10
+  statement: Cada nueva activación solicita credencial efímera nueva con intención de un uso uses:1 sin reutilizar el token ya consumido; el retorno token o error y sesión lista o fallo son ramas alternativas y el error detiene el camino de éxito y vuelve a cierre/recuperación.
+  constrains:
+  - step-16
+  - step-17
+  - step-18
+  - step-19
+- id: INV-11
+  statement: Sólo con nueva sesión lista frontend aporta los campos ya capturados como contexto del canal de voz, sin reiniciar ni sobrescribir estado compartido y respetando confirmación de ediciones manuales; esos campos no se incluyen en telemetría ni se requiere enviarlos a token-issuer para crear la credencial.
+  constrains:
+  - step-19
+  - step-20
+- id: INV-12
+  statement: El segmento 1 y el 2 son disparadores alternativos de cierre, el 3 protege ante eventos tardíos y el 4 es continuación opcional; no es obligatorio fallar, recibir evento tardío ni reactivar voz tras cada cierre.
+  constrains:
+  - step-1
+  - step-5
+  - step-11
+  - step-15
