@@ -3,3 +3,8 @@
 .agents/
 .claude/
 .archify/
+
+# Scanner outputs; raw reports/diagnostics live privately under ignored .qf/.
+/reports/
+__pycache__/
+*.pyc

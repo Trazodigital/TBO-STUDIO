@@ -1,0 +1,137 @@
+{
+  "scope": "schema checks and real framework security gate against synthetic scanner processes; NOT a real OSV run",
+  "versions": [
+    {
+      "tool": "Loki HTTP API",
+      "version": "v1",
+      "schema_accepts": true,
+      "violations": []
+    },
+    {
+      "tool": "Apps Script deployment VERSION NUMBER (illustrative control, not TBO)",
+      "version": "17",
+      "schema_accepts": true,
+      "violations": []
+    },
+    {
+      "tool": "Gemini Live API",
+      "version": "v1beta",
+      "schema_accepts": false,
+      "violations": [
+        {
+          "path": "areas/0",
+          "keyword": "oneOf"
+        }
+      ]
+    },
+    {
+      "tool": "Vercel managed Node.js runtime",
+      "version": "24.x",
+      "schema_accepts": false,
+      "violations": [
+        {
+          "path": "areas/0",
+          "keyword": "oneOf"
+        }
+      ]
+    },
+    {
+      "tool": "Google Sheets hosted service",
+      "version": null,
+      "schema_accepts": false,
+      "violations": [
+        {
+          "path": "areas/0",
+          "keyword": "oneOf"
+        }
+      ]
+    },
+    {
+      "tool": "Grafana Faro Cloud collector",
+      "version": null,
+      "schema_accepts": false,
+      "violations": [
+        {
+          "path": "areas/0",
+          "keyword": "oneOf"
+        }
+      ]
+    },
+    {
+      "tool": "gemini-3.8-live MODEL public version, not API version",
+      "version": "3.8",
+      "schema_accepts": true,
+      "violations": []
+    }
+  ],
+  "scanner_cases": [
+    {
+      "case": "clean_exit_0",
+      "fixture_exit": 0,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "medium_exit_1",
+      "fixture_exit": 1,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "high_exit_1",
+      "fixture_exit": 1,
+      "rules": [
+        "SECURITY_FINDING"
+      ],
+      "gate_passes": false
+    },
+    {
+      "case": "unscored_exit_1",
+      "fixture_exit": 1,
+      "rules": [
+        "SECURITY_FINDING"
+      ],
+      "gate_passes": false
+    },
+    {
+      "case": "reserved_result_exit_2_clean_sarif",
+      "fixture_exit": 2,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "operational_error_exit_127_clean_sarif",
+      "fixture_exit": 127,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "no_packages_exit_128_clean_sarif",
+      "fixture_exit": 128,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "exit_127_json_object_not_sarif",
+      "fixture_exit": 127,
+      "rules": [],
+      "gate_passes": true
+    },
+    {
+      "case": "exit_127_missing_report",
+      "fixture_exit": 127,
+      "rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "gate_passes": false
+    },
+    {
+      "case": "exit_127_invalid_json",
+      "fixture_exit": 127,
+      "rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "gate_passes": false
+    }
+  ]
+}
