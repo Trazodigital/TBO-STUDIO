@@ -1,0 +1,249 @@
+# PROPOSED — checkpoint 3 approval is still required. See stack-review.md.
+# Provider selection/API labels follow ADR-0002; not immutable runtime releases.
+# Gemini stack label v1-beta maps to actual wire apiVersion v1beta, unchanged.
+# Faro v1 denotes the public API contract major (OpenAPI info.version 1.0.0).
+contract: stack.v2
+areas:
+- area: language
+  tool: typescript
+  version: 5.9.3
+  version_command: ./node_modules/.bin/tsc --version
+  purpose: Typed browser/server source; compatible with selected typescript-eslint.
+- area: runtime
+  tool: Node.js (local and CI)
+  version: 24.22.3
+  version_command: node --version
+  purpose: Exact local/CI reference; not a promise about the remote patch.
+- area: runtime
+  tool: Vercel managed Node.js runtime
+  version: '24'
+  purpose: 'Provider major selection 24, per owner-approved granularity in ADR-0002. Vercel manages
+    minor/patch; this is not a promise that remote process.version equals local/CI 24.22.3.'
+- area: package_manager
+  tool: npm
+  version: 11.19.1
+  version_command: npm --version
+  run: npm ci
+  purpose: Future lockfile pins transitive dependencies; no installation performed.
+- area: frameworks
+  tool: react
+  version: 18.3.1
+  version_command: npm ls --depth=0 react
+  purpose: Retain prototype React major.
+- area: libraries
+  tool: react-dom
+  version: 18.3.1
+  version_command: npm ls --depth=0 react-dom
+  purpose: Matching React renderer.
+- area: libraries
+  tool: '@vitejs/plugin-react'
+  version: 4.7.0
+  version_command: npm ls --depth=0 @vitejs/plugin-react
+  purpose: Peer includes Vite ^7.0.0; migrated build not run.
+- area: libraries
+  tool: tailwindcss
+  version: 3.4.19
+  version_command: npm ls --depth=0 tailwindcss
+  purpose: Published v3-lts; retain prototype styles.
+- area: libraries
+  tool: postcss
+  version: 8.5.32
+  version_command: npm ls --depth=0 postcss
+  purpose: Tailwind 3 CSS processing.
+- area: libraries
+  tool: autoprefixer
+  version: 10.6.2
+  version_command: npm ls --depth=0 autoprefixer
+  purpose: PostCSS ^8.1.0 peer.
+- area: libraries
+  tool: thinking-orbs
+  version: 0.3.1
+  version_command: npm ls --depth=0 thinking-orbs
+  purpose: React >=18 peer; limited existing-version SSR smoke passed.
+- area: libraries
+  tool: mp4box
+  version: 0.5.4
+  version_command: npm ls --depth=0 mp4box
+  purpose: Keep media API and manual prototype declarations; browser decoding unverified.
+- area: libraries
+  tool: lucide-react
+  version: 0.454.0
+  version_command: npm ls --depth=0 lucide-react
+  purpose: Preserve prototype icons.
+- area: libraries
+  tool: '@google/genai'
+  version: 3.2.0
+  version_command: npm ls --depth=0 @google/genai
+  purpose: Live and token SDK; verify effective retry options before implementation.
+- area: libraries
+  tool: '@grafana/faro-web-sdk'
+  version: 2.14.0
+  version_command: npm ls --depth=0 @grafana/faro-web-sdk
+  purpose: Only allowlisted technical events; no personal fields or sensitive URLs.
+- area: libraries
+  tool: pino
+  version: 10.4.0
+  version_command: npm ls --depth=0 pino
+  purpose: Structured server events; not commercial storage.
+- area: libraries
+  tool: '@vercel/functions'
+  version: 3.11.1
+  version_command: npm ls --depth=0 @vercel/functions
+  purpose: Bounded best-effort waitUntil for non-blocking Loki sends.
+- area: libraries
+  tool: zod
+  version: 4.6.7
+  version_command: npm ls --depth=0 zod
+  purpose: Use approved email regex and catalog values, not library defaults instead.
+- area: libraries
+  tool: '@types/react'
+  version: 18.3.31
+  version_command: npm ls --depth=0 @types/react
+  purpose: React 18 declarations.
+- area: libraries
+  tool: '@types/react-dom'
+  version: 18.3.7
+  version_command: npm ls --depth=0 @types/react-dom
+  purpose: React DOM 18 declarations.
+- area: libraries
+  tool: '@types/node'
+  version: 24.19.2
+  version_command: npm ls --depth=0 @types/node
+  purpose: Node 24 declarations, not Node 26.
+- area: libraries
+  tool: '@eslint/js'
+  version: 10.0.1
+  version_command: npm ls --depth=0 @eslint/js
+  purpose: ESLint 10 configuration.
+- area: libraries
+  tool: typescript-eslint
+  version: 8.72.2
+  version_command: npm ls --depth=0 typescript-eslint
+  purpose: Declared TypeScript >=4.8.4 <6.1.0 and ESLint 10 support.
+- area: libraries
+  tool: eslint-plugin-react-hooks
+  version: 7.1.1
+  version_command: npm ls --depth=0 eslint-plugin-react-hooks
+  purpose: Hook rules with declared ESLint 10 support.
+- area: libraries
+  tool: eslint-plugin-react-refresh
+  version: 0.5.7
+  version_command: npm ls --depth=0 eslint-plugin-react-refresh
+  purpose: Refresh rules with declared ESLint 9/10 support.
+- area: libraries
+  tool: '@vitest/coverage-v8'
+  version: 5.1.0
+  version_command: npm ls --depth=0 @vitest/coverage-v8
+  purpose: Coverage provider matching Vitest.
+- area: data_stores
+  not_needed: 'REQ-0028: no product-owned commercial storage. Apps Script / Sheets is the external receiving
+    integration.'
+- area: llm
+  tool: gemini-3.8-live
+  version: '3.8'
+  purpose: Exact public model code; 3.8 is not an immutable weights snapshot. Free-tier account availability
+    untested.
+- area: external_services
+  tool: Gemini Live API
+  version: v1-beta
+  purpose: 'Owner-approved stack label normalized from provider API v1beta (ADR-0002); not a Google
+    wire identifier or a complete strict SemVer string. SDK httpOptions.apiVersion and endpoint
+    paths MUST remain v1beta; this does not select stable v1 or another API.'
+- area: external_services
+  tool: Apps Script lead webhook / Google Sheets destination
+  version: '1'
+  purpose: 'Owner-selected script version 1 for the first Web App deployment. No remote deployment
+    verification performed. Pins receiver script interface, not Google hosted internals; no direct
+    Sheets REST API assumed.'
+- area: external_services
+  tool: Loki HTTP ingestion API
+  version: v1
+  purpose: POST /loki/api/v1/push through Node fetch; Pino events, bounded best-effort waitUntil; no batch
+    worker. API version, not Cloud server release.
+- area: external_services
+  tool: Grafana Faro Cloud collector
+  version: v1
+  purpose: 'Faro ingestion API/payload contract major 1: official grafana/faro spec/gen/faro.gen.yaml
+    publishes OpenAPI info.version 1.0.0. Not the OpenAPI format version 3.0.0, SDK version 2.14.0,
+    or the managed Cloud collector implementation release. See ADR-0002.'
+- area: test_runner
+  tool: vitest
+  version: 5.1.0
+  version_command: ./node_modules/.bin/vitest --version
+  run: ./node_modules/.bin/vitest run
+  purpose: Future unit/integration/security suites; suite reports and commands belong to later verification
+    plan.
+- area: test_runner
+  tool: playwright
+  version: 1.65.0
+  version_command: ./node_modules/.bin/playwright --version
+  run: ./node_modules/.bin/playwright test
+  purpose: Provided by @playwright/test 1.65.0; browser software tests with provider doubles in CI.
+- area: lint
+  tool: eslint
+  version: 10.14.0
+  version_command: ./node_modules/.bin/eslint --version
+  run: ./node_modules/.bin/eslint . --max-warnings 0
+- area: format
+  tool: prettier
+  version: 3.10.1
+  version_command: ./node_modules/.bin/prettier --version
+  run: ./node_modules/.bin/prettier --check .
+- area: static_analysis
+  tool: typescript
+  version: 5.9.3
+  version_command: ./node_modules/.bin/tsc --version
+  run: ./node_modules/.bin/tsc -b
+- area: secrets_scanner
+  tool: gitleaks
+  version: 8.30.1
+  version_command: gitleaks version
+  run: mkdir -p reports && gitleaks git --redact --report-format sarif --report-path reports/secrets.sarif
+  results: reports/secrets.sarif
+  purpose: Keep native exit code; no || true or fabricated report.
+- area: dependencies_scanner
+  tool: osv-scanner
+  version: 2.7.1
+  version_command: osv-scanner --version
+  run: mkdir -p reports && osv-scanner scan source --format sarif --lockfile package-lock.json > reports/dependencies.sarif
+  results: reports/dependencies.sarif
+  purpose: Keep native exit/SARIF. Framework judges SARIF, not exit; operational/report-shape gap is FB-7.
+- area: build
+  tool: vite
+  version: 7.3.8
+  version_command: ./node_modules/.bin/vite --version
+  run: ./node_modules/.bin/vite build
+  purpose: Browser output dist after type checking.
+- area: build
+  tool: vercel
+  version: 65.14.0
+  version_command: ./node_modules/.bin/vercel --version
+  run: ./node_modules/.bin/vercel build
+  purpose: Future full packaging to .vercel/output including Functions; project configuration not created.
+- area: deployment
+  tool: vercel
+  version: 65.14.0
+  version_command: ./node_modules/.bin/vercel --version
+  run: ./node_modules/.bin/vercel deploy --prebuilt
+  purpose: Separately authorized manual Preview only. No --prod, automatic deploy, account changes or
+    paid upgrade.
+- area: version_control
+  tool: GitHub
+- area: ci_cd
+  tool: GitHub Actions
+- area: task_management
+  tool: GitHub Issues
+- area: requirements_engineering
+  tool: quality-framework/derive_requirements_plugin
+- area: diagram_tool
+  tool: archify
+- area: documentation
+  not_needed: Repository Markdown and framework-generated reviews; no additional generator.
+code_files:
+- '**/*.ts'
+- '**/*.tsx'
+env_read_patterns:
+- process\.env\.([A-Z][A-Z0-9_]*)
+- process\.env\[['"]([A-Z][A-Z0-9_]*)['"]\]
+- import\.meta\.env\.([A-Z][A-Z0-9_]*)
+decision_record: docs/decisions/0001-personal-framework-test-stack.md

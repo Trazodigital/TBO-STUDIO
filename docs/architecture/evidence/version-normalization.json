@@ -1,0 +1,38 @@
+{
+  "scope": "User-authorized stack label granularity; no provider runtime/deployment verification or strict SemVer claim.",
+  "rows": [
+    {
+      "tool": "Vercel managed Node.js runtime",
+      "stack_version": "24",
+      "meaning": "provider-major selection",
+      "local_ci_node": "24.22.3",
+      "provider_minor_patch_frozen": false,
+      "source": "https://vercel.com/docs/functions/runtimes/node-js/node-js-versions"
+    },
+    {
+      "tool": "Gemini Live API",
+      "stack_version": "v1-beta",
+      "meaning": "documented local normalization",
+      "wire_api_version": "v1beta",
+      "google_published_alias": false,
+      "source": "https://ai.google.dev/gemini-api/docs/ephemeral-tokens"
+    },
+    {
+      "tool": "Grafana Faro Cloud collector",
+      "stack_version": "v1",
+      "meaning": "ingestion API/payload contract major",
+      "published_api_info_version": "1.0.0",
+      "openapi_format_version": "3.0.0",
+      "sdk_version": "2.14.0",
+      "hosted_build_pinned": false,
+      "source": "https://raw.githubusercontent.com/grafana/faro/main/spec/gen/faro.gen.yaml"
+    }
+  ],
+  "strict_semver_checks": {
+    "24": null,
+    "v1-beta": null,
+    "v1": null,
+    "1.0.0-beta": "1.0.0-beta"
+  },
+  "schema_violations": []
+}
