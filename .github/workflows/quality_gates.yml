@@ -111,6 +111,21 @@ jobs:
       - name: Install the framework's runtime dependencies
         run: pip install -r .framework/requirements.txt
 
+      # Product-owned regression checks for the explicitly temporary FB-7 adapter.
+      # Scanner doubles only: no scanner downloads, credentials or provider calls.
+      - name: Test the fail-closed scanner integration
+        env:
+          FB7_EVIDENCE: .qf/fb7-regression-evidence.json
+        run: python -B -m unittest discover -s tests/tooling -p 'test_*.py' -v
+
+      - name: Keep the fail-closed regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fb7-regression-evidence
+          path: .qf/fb7-regression-evidence.json
+          if-no-files-found: error
+
       # Replace with the product's own toolchain: the tools of its stack
       # (paths.stack_file) must run here, e.g. actions/setup-java plus Maven.
       - name: Install the product's toolchain

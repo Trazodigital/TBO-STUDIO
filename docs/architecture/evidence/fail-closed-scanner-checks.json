@@ -1,0 +1,1015 @@
+{
+  "scope": "Synthetic scanners through actual adapter and unmodified framework gate; NOT real scanner runs",
+  "framework_pin": "71110564c658ba39fd255e9f5368c0d16ffe7e60",
+  "python_version": "3.14.8",
+  "jsonschema_version": "4.23.0",
+  "pyyaml_version": "6.0.2",
+  "adapter_sha256": "e51deb3890f2f41129661253f687ebfe02ad1fda8aa7ec78c5e9d55eefd7dc21",
+  "tests_sha256": "455388aa9b5d68cc102384234d4b549e1dbe5ee02029a264f3a1fb755a00caf2",
+  "stack_sha256": "21390c1cd77ef31ac89a17d1cec58ec2292f9f733a1ec6513897e02bca042e0e",
+  "framework_gate_sha256": "1cdc3d69a181d4f622c3db4298bd3104b93d172d3c4a256d8c0a9ecd896c7855",
+  "schema_sha256": "c3b4bb2d6093897483348925aaa73af03b3e3f4bd4ca38cef26dcb4212a2682e",
+  "note": "Only asserted matrix cases are recorded here; unittest success is required separately",
+  "cases": [
+    {
+      "case": "clean",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_3.1",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_6.9",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_7.0",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_9.8",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_None",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "clean",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_3.1",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_6.9",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": true,
+      "gate_rules": [],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_7.0",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_9.8",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "finding_None",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": true,
+      "gate_rules": [
+        "SECURITY_FINDING"
+      ],
+      "published_bytes_match_original": true,
+      "reason": "validated original report"
+    },
+    {
+      "case": "findings_exit_non_SARIF_object",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "findings_exit_without_results",
+      "scanner": "osv-scanner",
+      "native_exit_code": 1,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "scanner exit and SARIF result count disagree"
+    },
+    {
+      "case": "clean_exit_with_results",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "scanner exit and SARIF result count disagree"
+    },
+    {
+      "case": "findings_exit_non_SARIF_object",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "findings_exit_without_results",
+      "scanner": "gitleaks",
+      "native_exit_code": 3,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "scanner exit and SARIF result count disagree"
+    },
+    {
+      "case": "clean_exit_with_results",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "scanner exit and SARIF result count disagree"
+    },
+    {
+      "case": "object",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "array",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "invalid_json",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "JSONDecodeError"
+    },
+    {
+      "case": "empty_file",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "JSONDecodeError"
+    },
+    {
+      "case": "missing",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "JSONDecodeError"
+    },
+    {
+      "case": "empty_runs",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected nonempty, self-contained SARIF runs"
+    },
+    {
+      "case": "null_runs",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected nonempty, self-contained SARIF runs"
+    },
+    {
+      "case": "wrong_version",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "wrong_driver",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF driver does not match the selected scanner"
+    },
+    {
+      "case": "no_results",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected inline results array, not metadata or external results"
+    },
+    {
+      "case": "null_results",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "bad_result",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "bad_rule",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "failed_invocation",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF reports unsuccessful execution"
+    },
+    {
+      "case": "invocation_error_exit",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF invocation reports an operational error"
+    },
+    {
+      "case": "error_notification",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF reports a tool execution/configuration error"
+    },
+    {
+      "case": "external_results",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected inline results array, not metadata or external results"
+    },
+    {
+      "case": "malformed_score",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "nan_score",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "negative_score",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "duplicate_key",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "duplicate JSON property"
+    },
+    {
+      "case": "nonfinite_json",
+      "scanner": "osv-scanner",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "non-finite JSON constant"
+    },
+    {
+      "case": "object",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "array",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "invalid_json",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "JSONDecodeError"
+    },
+    {
+      "case": "empty_file",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "JSONDecodeError"
+    },
+    {
+      "case": "missing",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "FileNotFoundError"
+    },
+    {
+      "case": "empty_runs",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected nonempty, self-contained SARIF runs"
+    },
+    {
+      "case": "null_runs",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected nonempty, self-contained SARIF runs"
+    },
+    {
+      "case": "wrong_version",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "wrong_driver",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF driver does not match the selected scanner"
+    },
+    {
+      "case": "no_results",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected inline results array, not metadata or external results"
+    },
+    {
+      "case": "null_results",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "bad_result",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "bad_rule",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF 2.1.0 schema violation"
+    },
+    {
+      "case": "failed_invocation",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF reports unsuccessful execution"
+    },
+    {
+      "case": "invocation_error_exit",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF invocation reports an operational error"
+    },
+    {
+      "case": "error_notification",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "SARIF reports a tool execution/configuration error"
+    },
+    {
+      "case": "external_results",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "expected inline results array, not metadata or external results"
+    },
+    {
+      "case": "malformed_score",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "nan_score",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "negative_score",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "invalid security-severity"
+    },
+    {
+      "case": "duplicate_key",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "duplicate JSON property"
+    },
+    {
+      "case": "nonfinite_json",
+      "scanner": "gitleaks",
+      "native_exit_code": 0,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "non-finite JSON constant"
+    },
+    {
+      "case": "original_FB7_exit127_object",
+      "scanner": "osv-scanner",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_2_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 2,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_2_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 2,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_126_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 126,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_126_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 126,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_127_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_127_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_128_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 128,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_128_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 128,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_129_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 129,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_129_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 129,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_255_findings_False",
+      "scanner": "osv-scanner",
+      "native_exit_code": 255,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_255_findings_True",
+      "scanner": "osv-scanner",
+      "native_exit_code": 255,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "original_FB7_exit127_object",
+      "scanner": "gitleaks",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_1_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 1,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_1_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 1,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_2_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 2,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_2_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 2,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_126_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 126,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_126_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 126,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_127_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_127_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 127,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_128_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 128,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_128_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 128,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_255_findings_False",
+      "scanner": "gitleaks",
+      "native_exit_code": 255,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "error_255_findings_True",
+      "scanner": "gitleaks",
+      "native_exit_code": 255,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "timeout",
+      "scanner": "osv-scanner",
+      "native_exit_code": -9,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "TimeoutExpired"
+    },
+    {
+      "case": "signal",
+      "scanner": "osv-scanner",
+      "native_exit_code": -15,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    },
+    {
+      "case": "timeout",
+      "scanner": "gitleaks",
+      "native_exit_code": -9,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "TimeoutExpired"
+    },
+    {
+      "case": "signal",
+      "scanner": "gitleaks",
+      "native_exit_code": -15,
+      "report_accepted": false,
+      "gate_rules": [
+        "SCAN_NOT_RUN"
+      ],
+      "published_bytes_match_original": null,
+      "reason": "operational or unsupported scanner exit"
+    }
+  ]
+}

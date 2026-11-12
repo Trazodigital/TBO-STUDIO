@@ -124,8 +124,10 @@ commands. The provider APIs/model are not shell executables.
   separate authorization. No `--prod`, account changes, automatic deploy or
   production migration. No deployment command was executed.
 - Gitleaks writes `reports/secrets.sarif`; OSV writes
-  `reports/dependencies.sarif`. Their commands preserve native status and never
-  use `|| true`, fabricate clean reports or reuse an earlier tree's report.
+  `reports/dependencies.sarif` through the temporary owner-authorized FB-7
+  adapter (ADR-0003). It publishes unchanged original bytes only after native
+  execution and full SARIF validation. No `|| true`, fabricated clean reports
+  or reused reports; execution/validation failure publishes nothing.
 - Test-suite commands and JUnit/Cobertura/measurement settings belong in the
   verification plan at their appropriate later stages; test code is not
   implemented by this stack proposal.
@@ -163,11 +165,41 @@ processes (not a patched gate, not real OSV), produced:
 | exit 127, freshly generated JSON `{}` | pass — `_read` only requires a dictionary |
 | exit 127, missing report or invalid JSON | SCAN_NOT_RUN |
 
-This is FB-7, distinct from version grammar. No real OSV binary was installed
-or run; it is not a vulnerability scan of this product. The stack preserves
-OSV's raw status/report, but that alone does not fix the gate. Do not claim the
-security assurance complete until the upstream behavior or an explicitly
-approved fail-closed integration is resolved. No workaround is applied here.
+This is FB-7, distinct from version grammar. The table above is the historical
+**unmitigated** reproduction, retained unchanged; it is not the adapter result.
+No real OSV binary was installed or run; it is not a vulnerability scan.
+
+### Authorized temporary mitigation (ADR-0003)
+
+The owner authorized an adapter outside `.framework`, now invoked by **both**
+scanner rows. It checks native status, validates the complete vendored OASIS
+SARIF 2.1.0 schema plus execution/result consistency, and atomically publishes
+only the original bytes. Any operational or validation error withholds the
+configured results file, so the unchanged gate reports `SCAN_NOT_RUN` even
+though it ignores command status. Diagnostics/raw data stay privately under
+ignored `.qf/security-scans/`, outside the gate's results paths.
+
+OSV completed 0/1 remains unchanged. Reserved statuses are rejected until
+explicitly supported, not reclassified as general errors. Gitleaks runs with
+native `--exit-code 3`: 0/3 represents completion, while its ambiguous default
+1 becomes operational-only and blocks, including partial scans with findings.
+The severity policy is not altered: valid medium 6.9 can pass; 7.0/critical or
+unscored findings block `SECURITY_FINDING`. Empty results are allowed only for
+a completed, valid, self-contained clean scan, not an operational failure.
+
+[Executed synthetic matrix](evidence/fail-closed-scanner-checks.json) exercises
+the actual commands/adapter and real gate with scanner doubles, including
+127/128, `{}`, malformed/missing reports, status mismatches, stale reports,
+signals/timeouts and legitimate findings. Additional tests cover both actual
+rows together, missing binary/validator, schema integrity and cached-run
+replay. Product-owned CI runs the tests without scanner installation or
+provider access. Neither remote CI success nor native-binary verification is
+claimed by this local evidence.
+
+See [contract, limits, primary sources and removal criteria](../../tools/security/README.md).
+FB-7 remains **open upstream**; the exception mitigates the selected integration
+only. Its acceptance still requires independent re-review and human checkpoint
+approval. No upstream issue/PR was opened by implementing this workaround.
 
 Reproduce the version grammar without installation:
 
@@ -221,9 +253,13 @@ The latest results and official generated table are refreshed after each change:
 
 Historical `stack-checks.json` retains the rejected literal 24.x/v1beta and
 missing-version fixtures; those are not the current proposed rows. The
-scanner assurance finding FB-7 remains open. No installation, migrated build,
-real provider verification, component/test implementation, commit, push or
-deployment is claimed. Host checks still require their configured access.
+scanner assurance finding FB-7 remains open upstream, with the local mitigation
+and repository-tooling tests recorded in ADR-0003. No scanner installation,
+migrated application build, real provider verification, application component/
+test implementation or deployment is claimed. Publication is separately
+owner-authorized; it does not approve the checkpoint or authorize merge.
+Host checks still require their configured access; local results do not
+resolve the review against the previously published head.
 
 Latest local result (2026-11-12): `check_stack_decision_gate`,
 `verify_decision_records_gate`, and `check_framework_feedback_gate` **pass**;

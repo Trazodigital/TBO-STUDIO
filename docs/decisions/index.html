@@ -54,7 +54,7 @@ del { background: #fde0e0; color: #a40000; }
 <p>Nothing.</p>
 </section>
 <section>
-<h2>Recorded with the architecture (2)</h2>
+<h2>Recorded with the architecture (3)</h2>
 <p class="lead">Approved with the stack at checkpoint 3.</p>
 <div class="card open" id="ADR-0001">
 <div class="title"><b>Preserve the prototype UI while updating the supported build toolchain</b><span></span></div>
@@ -67,6 +67,12 @@ del { background: #fde0e0; color: #a40000; }
 <div class="line"><span class="label">Considered</span><span>Declare selected provider major and API contracts with explicit mappings or Require literal provider identifiers and exact managed runtime builds</span></div>
 <div class="line"><span class="label">Chosen</span><span>Declare selected provider major and API contracts with explicit mappings: Use version strings 24, v1-beta and v1 in the three stack rows. Send v1beta to Gemini unchanged. Faro v1 is the major of API info.version1.0.0, not the OpenAPI document format3.0.0 or SDK2.14.0. Retain Node24.22.3 for local/CI. Preserve the historical literal-schema reproductions and append FB4–6 follow-ups; do not claim an upstream schema fix. This user-authorized interpretation does not approve checkpoint3, prove provider availability, remove FB7&#x27;s security assurance gap, authorize installation or deploy code.</span></div>
 <div class="meta">ADR-0002</div>
+</div>
+<div class="card open" id="ADR-0003">
+<div class="title"><b>Guard declared scanner reports until FB-7 is fixed upstream</b><span></span></div>
+<div class="line"><span class="label">Considered</span><span>Wait for a released upstream correction before continuing or Apply a temporary fail-closed adapter outside the framework</span></div>
+<div class="line"><span class="label">Chosen</span><span>Apply a temporary fail-closed adapter outside the framework: Invoke tools/security/scan_fail_closed.py from both scanner run rows. Reject unsupported/operational exits and invalid/incomplete SARIF before atomically publishing unchanged reports. Use OSV native findings exit 1 and Gitleaks --exit-code 3 to separate completed findings from its operational exit 1. Maintain regression tests through the actual unchanged gate and run them as product-owned CI steps without changing mandatory framework steps. Retain raw diagnostics privately under ignored .qf/security-scans. Record every file and removal criteria in FB-7; keep it open until a released upstream fix is adopted and equivalent regressions pass without the adapter. Upstream issue publication, commit, push, merge, deployment and human checkpoint approval are not authorized by this record. No real scanner or provider run is claimed.</span></div>
+<div class="meta">ADR-0003</div>
 </div>
 </section>
 </body>

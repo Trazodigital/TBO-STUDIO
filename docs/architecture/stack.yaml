@@ -198,16 +198,18 @@ areas:
   tool: gitleaks
   version: 8.30.1
   version_command: gitleaks version
-  run: mkdir -p reports && gitleaks git --redact --report-format sarif --report-path reports/secrets.sarif
+  run: python3 -B tools/security/scan_fail_closed.py --scanner gitleaks --results reports/secrets.sarif
   results: reports/secrets.sarif
-  purpose: Keep native exit code; no || true or fabricated report.
+  purpose: 'Temporary FB-7 fail-closed adapter (ADR-0003). Native --exit-code 3 separates leaks from
+    operational exit 1. Publish only validated original SARIF; preserve native status and private diagnostics.'
 - area: dependencies_scanner
   tool: osv-scanner
   version: 2.7.1
   version_command: osv-scanner --version
-  run: mkdir -p reports && osv-scanner scan source --format sarif --lockfile package-lock.json > reports/dependencies.sarif
+  run: python3 -B tools/security/scan_fail_closed.py --scanner osv-scanner --results reports/dependencies.sarif
   results: reports/dependencies.sarif
-  purpose: Keep native exit/SARIF. Framework judges SARIF, not exit; operational/report-shape gap is FB-7.
+  purpose: 'Temporary FB-7 fail-closed adapter (ADR-0003). Accept only completed exits 0/1 with valid,
+    consistent original SARIF. No published report on operational/validation errors; gate blocks SCAN_NOT_RUN.'
 - area: build
   tool: vite
   version: 7.3.8
