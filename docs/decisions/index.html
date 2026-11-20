@@ -39,14 +39,45 @@ del { background: #fde0e0; color: #a40000; }
 <body>
 <h1>Decisions</h1>
 <p class="lead">Every decision about what the product does: the ones waiting for you, the ones you answered, and the ones the agent made alone because no critical requirement depends on them. Rendered by the framework's render_decisions_tool from the decision records; never edited by hand.</p>
-<p class="summary"><b>0 wait for you.</b> 0 answered by you, none asked again. 0 decided by the agent; you can change any of them.</p>
+<p class="summary"><b>0 wait for you.</b> 4 answered by you, none asked again. 0 decided by the agent; you can change any of them.</p>
 <section>
 <h2>Waiting for you (0)</h2>
 <p>Nothing.</p>
 </section>
 <section>
-<h2>Answered by you (0)</h2>
-<p>Nothing.</p>
+<h2>Answered by you (4)</h2>
+<div class="card answered" id="ADR-0004">
+<div class="line"><span class="label">Question</span><span>How should the product limit scripted abuse of the anonymous token and lead functions on free plans?</span></div>
+<div class="line"><span class="label">Why you</span><span class="why">It sets what protects the Gemini key quota and the server validation, both high-criticality requirements, and it accepts a residual risk only the owner can accept.</span></div>
+<div class="line"><span class="label">Options</span><span>WAF rate limit, same-origin and accepted residual risk: One Vercel Firewall rate limiting rule (Fixed Window, answers 429) on /api/* is available on Hobby, with no code and no data store.; Neither function sends Access-Control-Allow-Origin *, so other sites cannot call them from a visitor&#x27;s browser.; but A distributed attack from many addresses still passes a per-IP limit.; Rate limiting is usage-priced; on Hobby, which is never billed, exhausting its included usage may suspend the rule until the window resets.. Or Application-level rate limit with a shared store: Per-client limits independent of the WAF usage allowance.; but Adds a store (for example Redis) the approved stack does not have.; Still per-IP, so it does not stop a distributed attack either.. Or CAPTCHA or proof of work before each call: Raises the cost of every scripted call, distributed or not.; but Adds a provider, friction and visitor signals sent to a third party..</span></div>
+<div class="line"><span class="label">Select</span><span><ol><li>WAF rate limit, same-origin and accepted residual risk</li><li>Application-level rate limit with a shared store</li><li>CAPTCHA or proof of work before each call</li></ol></span></div>
+<div class="line"><span class="label">Answer</span><span class="answer">1. WAF rate limit, same-origin and accepted residual risk, on 2026-11-20</span></div>
+<div class="meta">REQ-0086 critical · REQ-0161 critical · REQ-0163 critical · ADR-0004</div>
+</div>
+<div class="card answered" id="ADR-0005">
+<div class="line"><span class="label">Question</span><span>Should lead-submitter treat an Apps Script 2xx that carries an HTML page or a JSON error as a failed delivery?</span></div>
+<div class="line"><span class="label">Why you</span><span class="why">It decides when a lead counts as received, which three high-criticality receipt requirements govern.</span></div>
+<div class="line"><span class="label">Options</span><span>Reject 2xx with text/html or a JSON error; accept empty or JSON success: Keeps the literal criteria, an empty 2xx is still receipt.; Turns the receiver&#x27;s silent failures into an error answer the visitor can retry.; but Adds a classification step the requirements do not spell out.; Relies on the operating assumption that the receiver always answers JSON.. Or Accept every 2xx as receipt: The simplest reading of the criteria, no body inspection.; but Answers 202 for leads lost by a failing script, a silent data loss.. Or Require a JSON success body through a change request: The strictest proof of receipt.; but Contradicts the approved receipt criteria; needs a change request to the three requirements..</span></div>
+<div class="line"><span class="label">Select</span><span><ol><li>Reject 2xx with text/html or a JSON error; accept empty or JSON success</li><li>Accept every 2xx as receipt</li><li>Require a JSON success body through a change request</li></ol></span></div>
+<div class="line"><span class="label">Answer</span><span class="answer">1. Reject 2xx with text/html or a JSON error; accept empty or JSON success, on 2026-11-20</span></div>
+<div class="meta">REQ-0074 critical · REQ-0146 critical · REQ-0164 critical · ADR-0005</div>
+</div>
+<div class="card answered" id="ADR-0006">
+<div class="line"><span class="label">Question</span><span>How long may lead-submitter wait for the lead webhook, including the Apps Script redirect, before it answers a failure?</span></div>
+<div class="line"><span class="label">Why you</span><span class="why">It fixes the operating value of the high-criticality upstream wait ceiling and its margin against the client&#x27;s wait limit.</span></div>
+<div class="line"><span class="label">Options</span><span>10 s: The most time for a slow Apps Script execution.; but No margin before the client&#x27;s 10 s limit; client timeouts while the lead is stored become likely.. Or 8 s: About 2 s of margin for cold start and the response to reach the browser.; Still generous for an Apps Script append to a sheet.; but The 2 s margin is an assumption until measured.. Or 6 s: A wide margin against client timeouts.; but More false failures on slow but successful Apps Script runs, which also produce duplicates on retry..</span></div>
+<div class="line"><span class="label">Select</span><span><ol><li>10 s</li><li>8 s</li><li>6 s</li></ol></span></div>
+<div class="line"><span class="label">Answer</span><span class="answer">2. 8 s, on 2026-11-20</span></div>
+<div class="meta">REQ-0079 critical · REQ-0144 critical · ADR-0006</div>
+</div>
+<div class="card answered" id="ADR-0007">
+<div class="line"><span class="label">Question</span><span>Should the formula-injection neutralization live in lead-submitter, declared in the validated-delivery contract, or in the Apps Script receiver?</span></div>
+<div class="line"><span class="label">Why you</span><span class="why">It places a security mitigation of the server validation and delivery requirements, both rated high.</span></div>
+<div class="line"><span class="label">Options</span><span>In lead-submitter, declared in validated-delivery: Tested in the product under @security[input-validation].; The contract shows exactly what the receiver gets.; but Couples the product to a spreadsheet receiver; any future receiver also gets the apostrophe.. Or In the Apps Script receiver, writing values as plain text: The product sends the values unchanged and stays receiver-agnostic.; but The mitigation lives outside the repository and is verified only by configuration review.; A receiver change can silently drop it..</span></div>
+<div class="line"><span class="label">Select</span><span><ol><li>In lead-submitter, declared in validated-delivery</li><li>In the Apps Script receiver, writing values as plain text</li></ol></span></div>
+<div class="line"><span class="label">Answer</span><span class="answer">1. In lead-submitter, declared in validated-delivery, on 2026-11-20</span></div>
+<div class="meta">REQ-0057 medium · REQ-0163 critical · REQ-0164 critical · ADR-0007</div>
+</div>
 </section>
 <section>
 <h2>Decided by the agent (0)</h2>

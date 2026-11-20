@@ -61,6 +61,13 @@ responsibility: Stores the structured logs emitted by the backend functions.
 
 ## Product components
 
+Composition roots are written as dotted module paths, as the code-to-design
+gate reads them: `src.api.voice-token` is `src/api/voice-token.ts`,
+`src.api.lead` is `src/api/lead.ts` and `src.main` is `src/main.tsx`, all
+inside `code_dir`. Vercel requires function entries under `api/`, so
+`api/voice-token.ts` and `api/lead.ts` hold only a one-line re-export of the
+handler built in `src/api/`, with no logic of their own.
+
 REQ-0133 is met by frontend, token-issuer and lead-submitter on purpose: its obligations are disjoint (frontend sends to Faro, both backends to Loki, none replaces the commercial destination), so sharing it is not an overlap of responsibilities.
 
 ### token-issuer
@@ -72,7 +79,13 @@ quotas or expirations. The per-activation limit belongs to the frontend, which
 is the only component that sees voice activations.
 
 No degraded mode: Loki and Gemini failures are handled per request (fail-open
-logging, an error response) and never change the state of the instance.
+logging, an error response) and never change the state of the instance. A
+missing Gemini API key is `unconfigured`: fail-closed, every request gets an
+error answer without a credential, and Gemini is never called.
+
+Its wait for the upstream token request has no requirement threshold; the
+value is an open item of detailed design (see *Open items*), so the "bounded
+wait" of the threat table is a promise the detailed design must number.
 
 ```yaml component
 id: token-issuer
@@ -85,18 +98,18 @@ budget:
   - {resource: upstream Gemini token requests per issuance without silent SDK retries, value: 1, unit: call}
 size: S
 meets: [REQ-0086, REQ-0087, REQ-0124, REQ-0133, REQ-0150, REQ-0157, REQ-0161, REQ-0181, REQ-0193, REQ-0198, REQ-0199, REQ-0201]
-decisions: [ADR-0001, ADR-0002]
+decisions: [ADR-0001, ADR-0002, ADR-0004]
 modes:
   - {mode: cold-start, to: [ready, unconfigured]}
   - {mode: ready, to: []}
   - {mode: unconfigured, to: []}
 concurrency: Invocations are stateless and may share one function instance, so only read-only configuration and the provider client live at module scope, and log delivery runs after the response via waitUntil.
-composition_root: api/voice-token.ts handler factory
+composition_root: src.api.voice-token
 ```
 
 ### lead-submitter
 
-A stateless Vercel Function. The 8 s upstream wait is an allocation of its own
+A stateless Vercel Function. The 8 s upstream wait (ADR-0006) is an allocation of its own
 inside the 10 s ceiling of REQ-0079 (envio INV-13 leaves the operating value to
 design), keeping about 2 s of margin before the browser gives up at 10 s
 (REQ-0144). The margin is an assumption to measure once code exists, since cold
@@ -118,13 +131,13 @@ budget:
   - {resource: lead webhook invocations per submission request without automatic retries, value: 1, unit: call}
 size: M
 meets: [REQ-0069, REQ-0071, REQ-0074, REQ-0076, REQ-0078, REQ-0079, REQ-0080, REQ-0127, REQ-0133, REQ-0145, REQ-0146, REQ-0147, REQ-0163, REQ-0164, REQ-0178, REQ-0195, REQ-0196, REQ-0200, REQ-0204]
-decisions: [ADR-0001, ADR-0002]
+decisions: [ADR-0001, ADR-0002, ADR-0004, ADR-0005, ADR-0006, ADR-0007]
 modes:
   - {mode: cold-start, to: [ready, unconfigured]}
   - {mode: ready, to: []}
   - {mode: unconfigured, to: []}
 concurrency: Submissions are stateless and independent, with no shared deduplication state, so concurrent or retried submissions may both reach the webhook, and log delivery runs after the response via waitUntil.
-composition_root: api/lead.ts handler factory
+composition_root: src.api.lead
 ```
 
 ### frontend
@@ -139,6 +152,9 @@ with voice as a path inside capture. Entering review while voice is starting
 goes straight from `voice-starting` to `review`, aborting the start and
 releasing every partially acquired resource before the brief is shown
 (REQ-0207, REQ-0142); a failed start returns to `capture` with the data kept.
+How long `voice-starting` may wait for the credential and the WSS handshake
+before it fails back to `capture` is an open item of detailed design (see
+*Open items*).
 
 REQ-0086 is shared with token-issuer, with disjoint obligations: the server
 does not fix the credential window, the browser does not blame a 429 on a
@@ -165,7 +181,7 @@ modes:
   - {mode: submitting, to: [accepted, review]}
   - {mode: accepted, to: []}
 concurrency: One browser event loop interleaves visitor input, voice tool calls, the submission request and telemetry, coordinated by the voice start lock, the pending-submission lock, explicit confirmation of voice proposals that conflict with manual edits, discarding voice events that arrive after the channel closed, and discarding late responses of superseded submission attempts.
-composition_root: src/main.tsx
+composition_root: src.main
 ```
 
 ## Interfaces
@@ -205,7 +221,7 @@ of lead-submitter:
 - `doPost(e)` cannot read HTTP headers, so a shared secret, if one is added to
   the URL, travels in the JSON body and falls under `stored-data`;
 - a Web App answers HTTP 200 even for application errors, and may return HTML
-  on permission errors or exceptions, so the adapter rejects a 2xx carrying
+  on permission errors or exceptions, so the adapter (ADR-0005) rejects a 2xx carrying
   `text/html` and a 2xx carrying a JSON application error, and accepts a 2xx
   with an empty body or a JSON success, as REQ-0074, REQ-0146 and REQ-0164
   require ("HTTP 2xx, even without a body"). Operating assumption: the receiver
@@ -228,8 +244,9 @@ unfiltered. Restricting the collector's allowed origins in Grafana Cloud is
 still to verify in detailed design.
 
 **lead-webhook stays external.** The Apps Script receiver lives outside this
-repository, and the product stays decoupled from the concrete receiver: it
-depends only on the `validated-delivery` contract.
+repository. The product is not receiver-agnostic: lead-submitter neutralizes
+spreadsheet formulas before delivery (ADR-0007), and `validated-delivery`
+declares it in its data, so another receiver needs a superseding record.
 
 **external-routing (lead-webhook → commercial-destination).** No product code
 runs on this edge: both ends are external, so verify_security_tests_gate finds
@@ -240,7 +257,7 @@ verified by configuration review, not by tests:
 - the spreadsheet is shared only with the commercial team;
 - the script runs as the owner and is deployed from script version 1;
 - cell values are neutralized against formula injection before they leave,
-  in lead-submitter (`lead-request`, `input-validation`).
+  in lead-submitter (ADR-0007; `lead-request`, `input-validation`).
 
 ```yaml interface
 id: capture
@@ -319,7 +336,7 @@ from: lead-submitter
 to: lead-webhook
 external: true
 protocol: HTTPS + JSON POST to the Apps Script Web App, script version 1, following its 302 redirect to script.googleusercontent.com
-data: the validated brief fields with any shared secret in the JSON body; a 2xx with an empty body or a JSON success as receipt, or a JSON error, text/html or failure status as failure
+data: the validated brief fields, text values starting with =, +, -, @, tab, CR or LF prefixed with an apostrophe (ADR-0007), with any shared secret in the JSON body; a 2xx with an empty body or a JSON success as receipt, or a JSON error, text/html or failure status as failure
 security_templates: [outbound-calls, stored-data]
 implementations:
   real: Apps Script Web App, script version 1
@@ -390,7 +407,7 @@ the template its test is marked with, `@security[<template>]`; *config* means
 verified by configuration review, with no product test; *TLS* means covered by
 the transport of the platform or SDK, with no test of its own.
 
-**Quota abuse and spam (decision).** The two browser-facing functions carry no
+**Quota abuse and spam (ADR-0004).** The two browser-facing functions carry no
 identity, by design. Mitigations, all without a data store:
 
 - one Vercel Firewall WAF rate limiting rule (Fixed Window, answering 429) on
@@ -440,7 +457,7 @@ usage window resets.
 | T | Applicable | HTTPS | TLS |
 | R | N/A | Server to provider, no user identity | — |
 | I | Applicable | The API key is never logged nor placed in an error | token-issuer `stored-data` |
-| D | Applicable | Slow, 429 or failing provider: bounded wait, one call without retry, fail-closed error | token-issuer `outbound-calls` |
+| D | Applicable | Slow, 429 or failing provider: bounded wait (value an open item), one call without retry, fail-closed error | token-issuer `outbound-calls` |
 | E | Applicable | Every request carries `uses: 1` and the constraints | token-issuer `outbound-calls` |
 
 ### voice-channel
@@ -514,3 +531,17 @@ lead-submitter.
 | I | Applicable | PII, credential, key or commercial data in a log line (REQ-0076, REQ-0178, REQ-0181); correlation_id in the body | `stored-data` |
 | D | Applicable | Loki slow or down: waitUntil, a fetch bounded by `getDeadline()`, fail-open | `outbound-calls` |
 | E | N/A | Nothing privileged behind the push API | — |
+
+## Open items
+
+Carried to detailed design, each to be fixed with a value or a verified fact:
+
+- token-issuer's timeout for the upstream Gemini token request;
+- the frontend's maximum wait in `voice-starting` for the credential and the
+  WSS handshake;
+- whether @google/genai 3.2.0 creates ephemeral tokens on v1beta, as ADR-0002
+  pins, or still requires v1alpha;
+- restricting the Faro collector's allowed origins in Grafana Cloud;
+- the measured margin of the 8 s webhook wait against the 10 s client wait
+  (ADR-0006);
+- the Vercel WAF rate limiting rule of ADR-0004, configured and reviewed.

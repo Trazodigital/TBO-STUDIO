@@ -78,9 +78,9 @@ than deleting one, so a missing answer stays visible.
 - **Status:** reported
 - **Issue:** https://github.com/alexxo/ASPICE_agent/issues/9
 
-**Impact on this product** — `external-routing` names `outbound-calls` to satisfy the schema; the architecture states that no product code runs there and that its security rests on assumptions verified by configuration review. No test was invented.
+**Impact on this product** — `external-routing` names `outbound-calls` to satisfy the schema, and a placeholder test double (`stub` named "none: no product code reaches this edge"); the architecture states that no product code runs there and that its security rests on assumptions verified by configuration review. No test was invented.
 
-**Workaround applied** — none; the interface and its prose say what the template does and does not mean. A fix upstream could allow `security_templates` to be empty or absent when neither end is a component.
+**Workaround applied** — `docs/architecture/architecture.md`, interface `external-routing`: the `outbound-calls` template and the placeholder double, with prose saying what both do and do not mean. A fix upstream could allow `security_templates` to be empty or absent when neither end is a component.
 
 ### FB-9 — A component running in the visitor's browser makes an internal interface a trust boundary the framework cannot express
 
