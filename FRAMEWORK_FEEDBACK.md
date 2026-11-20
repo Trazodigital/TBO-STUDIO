@@ -93,7 +93,7 @@ than deleting one, so a missing answer stays visible.
 
 **Workaround applied** — Local, outside the repository: `--settings '{"disableAllHooks":true}'` added to every `QF_COMMAND_TO_START_*` line of the product's `.env` and of `~/.aspice_agent_secrets/.env`. Remove it once the step 8 lines neutralise user hooks upstream. No framework file, gate or pin is changed.
 
-No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up).
+No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up), and FB-8 above.
 
 ### FB-7 — Security gate accepts operational scanner errors and non-SARIF JSON objects
 
