@@ -71,7 +71,29 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
-No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up).
+### FB-8 — Claude session lines of QUICKSTART step 8 run the person's own hooks outside the declared rights
+
+- **Date:** 2026-11-19
+- **Framework version:** v5.2.0 @ 79dee183de85cdd0c308d5d4a62311d445f3b748
+- **Severity:** high
+- **Class:** C2
+- **Status:** open
+
+**What the framework claims** — `.framework/QUICKSTART.md:388-390`: "With Claude Code, these lines give those rights (`--permission-mode dontAsk` refuses everything not listed, `--setting-sources user` keeps the product's own settings out)". The rights table above it says the reviewer "May write: .qf/reviews/ of that copy" and clarify "May write: nothing". The lines at `QUICKSTART.md:399-407` are the prescribed session commands.
+
+**What actually happens** — `--setting-sources user` loads `~/.claude/settings.json`, including its hooks, and hooks run as shell commands outside `--allowedTools` and `dontAsk`. On this machine a `UserPromptSubmit` hook runs `gentle-ai skill-registry refresh --cwd "${CLAUDE_PROJECT_DIR:-$PWD}"`. With the reviewer line copied verbatim, the watcher reviewing PR #12 (head da978a4) printed `REVIEWER CHANGED THE WORK ... .atl/.skill-registry.cache.json, .atl/skill-registry.md changed` (copy file `.qf/reviews/12-da978a4/.atl/skill-registry.md` written 21:17:37 -0600). The same session had already posted `APPROVED` by aspice-reviewer-bot on da978a4 at 2026-11-20T03:19:50Z; the log was written at 21:19:59 -0600. `watch_reviews_tool.py:416-433` compares the copy only after the session returns, and the posted approval is not withdrawn: after a restart the watcher printed `#12 head da978a4: ready to merge`, and `qf/merge` reported `Ready to merge`.
+
+**Reproduction** — In an empty git repository, with a user-level hook that writes to the working directory: `claude -p "Reply with the word ok" --permission-mode dontAsk --setting-sources user` leaves `?? .atl/` in `git status --porcelain`; the same command with `--settings '{"disableAllHooks":true}'` leaves it clean. `tools.start_session_tool.command_for` splits that flag into `['--settings', '{"disableAllHooks":true}']`.
+
+**Verification** — Run: both commands above were executed on 2026-11-19 with Claude Code on Fedora, and the watcher banner, review timestamp and `qf/merge` status were read from the live run and `gh`. Only read, not run: that every author session (clarify, tester, coder) is equally affected, since hooks load the same way; the watcher's change check covers only the reviewer.
+
+**Blast radius** — Every product whose person uses Claude Code with user-level hooks, plugins with hooks, or other user settings that act on the session's folder; every session line of step 8. Author sessions have no folder comparison, so a hook there changes the work silently.
+
+**Impact on this product** — The upgrade review of PR #12 stopped and needed a diagnosis; its approval, from the session whose copy changed, stayed valid for `qf/merge` and PR #12 was merged on it (9120f75). The hook touched only `.atl/` in the copy, not the PR's content.
+
+**Workaround applied** — Local, outside the repository: `--settings '{"disableAllHooks":true}'` added to every `QF_COMMAND_TO_START_*` line of the product's `.env` and of `~/.aspice_agent_secrets/.env`. Remove it once the step 8 lines neutralise user hooks upstream. No framework file, gate or pin is changed.
+
+No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up), and FB-8 above.
 
 ### FB-7 — Security gate accepts operational scanner errors and non-SARIF JSON objects
 
