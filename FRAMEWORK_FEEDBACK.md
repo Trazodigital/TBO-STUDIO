@@ -71,53 +71,31 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
+No findings for v5.4.2 (9f9d785) beyond FB-7 and FB-8, both re-verified open on this pin on 2026-11-19: `gates/sup/scan_security_gate.py` is unchanged since v5.2.0, and the QUICKSTART step 8 Claude lines still load user hooks with `--setting-sources user`. FB-1 and FB-2 were filed as found on v2.1.2, not re-run on this pin.
+
 ### FB-8 — Claude session lines of QUICKSTART step 8 run the person's own hooks outside the declared rights
 
 - **Date:** 2026-11-19
 - **Framework version:** v5.2.0 @ 79dee183de85cdd0c308d5d4a62311d445f3b748
-- **Severity:** high
-- **Class:** C2
-- **Status:** open
-
-**What the framework claims** — `.framework/QUICKSTART.md:388-390`: "With Claude Code, these lines give those rights (`--permission-mode dontAsk` refuses everything not listed, `--setting-sources user` keeps the product's own settings out)". The rights table above it says the reviewer "May write: .qf/reviews/ of that copy" and clarify "May write: nothing". The lines at `QUICKSTART.md:399-407` are the prescribed session commands.
-
-**What actually happens** — `--setting-sources user` loads `~/.claude/settings.json`, including its hooks, and hooks run as shell commands outside `--allowedTools` and `dontAsk`. On this machine a `UserPromptSubmit` hook runs `gentle-ai skill-registry refresh --cwd "${CLAUDE_PROJECT_DIR:-$PWD}"`. With the reviewer line copied verbatim, the watcher reviewing PR #12 (head da978a4) printed `REVIEWER CHANGED THE WORK ... .atl/.skill-registry.cache.json, .atl/skill-registry.md changed` (copy file `.qf/reviews/12-da978a4/.atl/skill-registry.md` written 21:17:37 -0600). The same session had already posted `APPROVED` by aspice-reviewer-bot on da978a4 at 2026-11-20T03:19:50Z; the log was written at 21:19:59 -0600. `watch_reviews_tool.py:416-433` compares the copy only after the session returns, and the posted approval is not withdrawn: after a restart the watcher printed `#12 head da978a4: ready to merge`, and `qf/merge` reported `Ready to merge`.
-
-**Reproduction** — In an empty git repository, with a user-level hook that writes to the working directory: `claude -p "Reply with the word ok" --permission-mode dontAsk --setting-sources user` leaves `?? .atl/` in `git status --porcelain`; the same command with `--settings '{"disableAllHooks":true}'` leaves it clean. `tools.start_session_tool.command_for` splits that flag into `['--settings', '{"disableAllHooks":true}']`.
-
-**Verification** — Run: both commands above were executed on 2026-11-19 with Claude Code on Fedora, and the watcher banner, review timestamp and `qf/merge` status were read from the live run and `gh`. Only read, not run: that every author session (clarify, tester, coder) is equally affected, since hooks load the same way; the watcher's change check covers only the reviewer.
-
-**Blast radius** — Every product whose person uses Claude Code with user-level hooks, plugins with hooks, or other user settings that act on the session's folder; every session line of step 8. Author sessions have no folder comparison, so a hook there changes the work silently.
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/5
 
 **Impact on this product** — The upgrade review of PR #12 stopped and needed a diagnosis; its approval, from the session whose copy changed, stayed valid for `qf/merge` and PR #12 was merged on it (9120f75). The hook touched only `.atl/` in the copy, not the PR's content.
 
 **Workaround applied** — Local, outside the repository: `--settings '{"disableAllHooks":true}'` added to every `QF_COMMAND_TO_START_*` line of the product's `.env` and of `~/.aspice_agent_secrets/.env`. Remove it once the step 8 lines neutralise user hooks upstream. No framework file, gate or pin is changed.
 
-No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up), and FB-8 above.
+No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (its 2026-11-18 follow-up, now in alexxo/ASPICE_agent#6: `gates/sup/scan_security_gate.py` unchanged since v4.0.0 and the 10 `tests/tooling` tests passing), and FB-8 above.
 
 ### FB-7 — Security gate accepts operational scanner errors and non-SARIF JSON objects
 
 - **Date:** 2026-11-12
 - **Framework version:** v4.0.0 @ 71110564c658ba39fd255e9f5368c0d16ffe7e60
-- **Severity:** critical
-- **Class:** C1
-- **Status:** open
-
-**What the framework claims** — `scan_security_gate.py` states scanners must write readable SARIF, while findings in those reports decide the security result rather than the exit code.
-
-**What actually happens** — The real gate passed a fixture exiting127 with freshly generated clean SARIF, a fixture exiting128 with clean SARIF, and a fixture exiting127 with JSON{}. `_read` only checks that JSON is a dictionary; check does not use run.exit_code after readable output. This is not a stale report: run_command removes previous matching reports first. Official OSV reserves127 for general error and128 for no packages (https://google.github.io/osv-scanner/output/#return-codes).
-
-**Reproduction** — Run the complete temporary-fixture script in docs/architecture/evidence/security-gate-reproduction.md from the product root; observed outputs are in stack-checks.json next to it.
-
-**Verification** — Original reproduction: executed the real framework gate with synthetic scanner processes, NOT OSV-Scanner2.7.1 or a product vulnerability scan. Controls: exit1+score6.9 passes; exit1+score7/unscored blocks SECURITY_FINDING; absent/invalid-JSON report blocks SCAN_NOT_RUN. Follow-up on 2026-11-12: execute `python3 -B -m unittest discover -s tests/tooling -p 'test_*.py' -v`; it runs the actual adapter and selected commands against the unchanged real gate. The asserted synthetic matrix is recorded in `docs/architecture/evidence/fail-closed-scanner-checks.json`. This does not claim real scanner installation/execution or remote CI success.
-
-**Blast radius** — Both scanner areas using scan_security_gate on this framework pin. Actual external scanner error-report combinations were not reproduced.
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/6
 
 **Impact on this product** — Native OSV exit1 is not inherently COMMAND_FAILED: report severity decides. The upstream defect remains open. The owner-authorized temporary adapter now protects both declared scanner commands: operational/unsupported status or invalid/incomplete SARIF leaves no published results file and the real gate blocks SCAN_NOT_RUN. Valid original findings still reach its unchanged severity policy. No ||true, fabricated clean SARIF or local result override is used; independent re-review and checkpoint approval remain pending.
 
-**Workaround applied** — TEMPORARY, explicitly authorized by the owner on 2026-11-12; ADR-0003 compares waiting for upstream with this integration. Files: `tools/security/scan_fail_closed.py`, `tools/security/README.md`, `tools/security/vendor/sarif-schema-2.1.0.json`, `tools/security/vendor/README.md`, `tests/tooling/test_scan_fail_closed.py`, `docs/architecture/stack.yaml`, `.github/workflows/quality_gates.yml`, `.gitignore`, `docs/decisions/0003-temporary-fail-closed-scanner-integration.md`, the generated `docs/decisions/index.html`, `docs/architecture/stack-review.md`, and `docs/architecture/evidence/fail-closed-scanner-checks.json`. The adapter clears stale output, checks native status and the full vendored OASIS schema, retains private diagnostics, and publishes only exact validated original bytes. OSV accepts completed 0/1; Gitleaks uses native --exit-code3 (0/3) so partial/error exit1 cannot masquerade as completed findings. No .framework file, contract, gate or pin is modified. Removal: adopt an authorized released upstream correction, verify equivalent positive/negative regressions against it without the adapter, then remove the adapter/schema and temporary CI/tests and restore direct native commands in the same reviewed change. Keep this entry open until that evidence exists; no upstream issue, new release, bot approval or merge is claimed.
-
-**Follow-up (2026-11-18, framework bump to v5.2.0 @ 79dee183de85cdd0c308d5d4a62311d445f3b748)** — `git -C .framework diff --stat v4.0.0 v5.2.0 -- gates/sup/scan_security_gate.py` prints nothing: the gate is unchanged in v5.2.0, so this defect is not fixed upstream and the temporary adapter stays. `python3 -B -m unittest discover -s tests/tooling -p 'test_*.py'` ran 10 tests OK against the v5.2.0 pin. No other findings for v5.2.0 (79dee18) at stage 3; the v5 author/tester/coder session changes are not yet exercised by this product.
+**Workaround applied** — TEMPORARY, explicitly authorized by the owner on 2026-11-12; ADR-0003 compares waiting for upstream with this integration. Files: `tools/security/scan_fail_closed.py`, `tools/security/README.md`, `tools/security/vendor/sarif-schema-2.1.0.json`, `tools/security/vendor/README.md`, `tests/tooling/test_scan_fail_closed.py`, `docs/architecture/stack.yaml`, `.github/workflows/quality_gates.yml`, `.gitignore`, `docs/decisions/0003-temporary-fail-closed-scanner-integration.md`, the generated `docs/decisions/index.html`, `docs/architecture/stack-review.md`, and `docs/architecture/evidence/fail-closed-scanner-checks.json`. The adapter clears stale output, checks native status and the full vendored OASIS schema, retains private diagnostics, and publishes only exact validated original bytes. OSV accepts completed 0/1; Gitleaks uses native --exit-code3 (0/3) so partial/error exit1 cannot masquerade as completed findings. No .framework file, contract, gate or pin is modified. Removal: adopt an authorized released upstream correction, verify equivalent positive/negative regressions against it without the adapter, then remove the adapter/schema and temporary CI/tests and restore direct native commands in the same reviewed change. Keep the adapter until that evidence exists; the defect is reported upstream as alexxo/ASPICE_agent#6, with no new release, bot approval or merge claimed.
 
 ### FB-6 — Faro Cloud collector has no evidenced selectable public release version
 
@@ -245,34 +223,8 @@ authorized commit and in CI.
 
 - **Date:** 2026-10-21
 - **Framework version:** v2.1.2 @ 5afd2d7da26304ddc0b5b062316435c46624920a
-- **Severity:** medium
-- **Class:** C6
-- **Status:** open
-
-**What the framework claims** — `.framework/agent/start_product.md`, steps 3–4,
-directs the agent to run the setup, review its files and commit them. The setup
-copies the feedback template unchanged in
-`.framework/tools/create_product_tool.py:249–253`; the bootstrap instructions
-do not explicitly add a release-accounting entry before that first commit.
-
-**What actually happens** — Setup exited 0, but the first PR's quality-gates
-run, https://github.com/Trazodigital/TBO-STUDIO/actions/runs/39631453516,
-reported `UNACCOUNTED_FRAMEWORK_BUMP`: "The framework moved to 5afd2d7 / v2.1.2
-in this pull request, but the log does not name it; record what you found, or
-a line such as 'No findings for v2.1.2'."
-
-**Reproduction** — Run the v2.1.2 setup in a product without an existing
-feedback log, commit the generated files and introduce the framework pin in a
-PR without adding an entry under this file's Log heading. This occurred in
-Trazodigital/TBO-STUDIO PR #1 at commit addf83b. Retrieve the observed output
-with `gh run view 39631453516 --repo Trazodigital/TBO-STUDIO --log-failed`.
-
-**Verification** — Run: the setup completed locally and the failure occurred
-in the linked CI run. The setup source and feedback gate were also read.
-Other products were not executed.
-
-**Blast radius** — Observed in this product; the same template-copying path
-and bootstrap instructions are shared by new products on v2.1.2.
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/7
 
 **Impact on this product** — Blocks the initial configuration PR until the
 introduced release is accounted for in the product's feedback log. Tracked
@@ -287,35 +239,8 @@ remains open upstream.
 
 - **Date:** 2026-10-21
 - **Framework version:** v2.1.2 @ 5afd2d7da26304ddc0b5b062316435c46624920a
-- **Severity:** medium
-- **Class:** C6
-- **Status:** open
-
-**What the framework claims** — `.framework/agent/start_product.md:80–82`
-prescribes the first commit message
-`chore: start the product with the ASPICE framework <release>` without a
-requirement or issue reference in its header or body.
-
-**What actually happens** — The prescribed message became commit addf83b,
-`chore: start the product with the ASPICE framework v2.1.2`. CI run
-https://github.com/Trazodigital/TBO-STUDIO/actions/runs/39631453516 reported
-`MISSING_REQUIREMENT_TOKEN`: "Commit addf83b 'chore: start the product with the
-ASPICE framework v2.1.2' names no requirement or issue; add the REQ-<n> or #<n>
-it serves to its header or body."
-
-**Reproduction** — Follow the v2.1.2 bootstrap instructions, use their exact
-commit message with the release substituted, then open a PR. The always-on
-commit-conventions gate checks every non-merge commit in the PR and rejects
-that message. Retrieve this product's observed output with
-`gh run view 39631453516 --repo Trazodigital/TBO-STUDIO --log-failed`.
-
-**Verification** — Run: the prescribed commit was created and the linked CI
-run rejected it. The instructions and
-`.framework/gates/sup/check_commit_conventions_gate.py` were also read.
-Other products were not executed.
-
-**Blast radius** — Observed in this product; every new product using that
-unmodified prescribed message on v2.1.2 is subject to the same gate rule.
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/8
 
 **Impact on this product** — Blocks PR #1. Adding a later compliant commit
 alone cannot repair the original message because the gate checks each commit.
@@ -327,3 +252,4 @@ the `setup/aspice-framework` branch's setup commit with a message containing
 rules. Publication requires a user-run, feature-branch-only force-with-lease;
 the corrected commit must receive fresh reviews. Retain this record until
 the bootstrap guidance is corrected upstream.
+
