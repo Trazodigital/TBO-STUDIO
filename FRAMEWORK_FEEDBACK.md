@@ -71,7 +71,29 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
-No findings for v5.4.2 (9f9d785) beyond FB-7 and FB-8, both re-verified open on this pin on 2026-11-19: `gates/sup/scan_security_gate.py` is unchanged since v5.2.0, and the QUICKSTART step 8 Claude lines still load user hooks with `--setting-sources user`. FB-1 and FB-2 were filed as found on v2.1.2, not re-run on this pin.
+### FB-10 — An external interface between two external actors must name a security template that no gate can require
+
+- **Date:** 2026-11-20
+- **Framework version:** v5.4.2 @ 9f9d785b52f0b7be4e66e47dd2cee99c32dcd791
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/9
+
+**Impact on this product** — `external-routing` names `outbound-calls` to satisfy the schema; the architecture states that no product code runs there and that its security rests on assumptions verified by configuration review. No test was invented.
+
+**Workaround applied** — none; the interface and its prose say what the template does and does not mean. A fix upstream could allow `security_templates` to be empty or absent when neither end is a component.
+
+### FB-9 — A component running in the visitor's browser makes an internal interface a trust boundary the framework cannot express
+
+- **Date:** 2026-11-20
+- **Framework version:** v5.4.2 @ 9f9d785b52f0b7be4e66e47dd2cee99c32dcd791
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/10
+
+**Impact on this product** — `token-request` and `lead-request` declare `input-validation`, and the architecture's STRIDE tables cover them; their tests are held by the reviewer, not by a gate.
+
+**Workaround applied** — none. A fix upstream could add a per-component `runs_in: untrusted` (or a trust-boundary mark on the interface) that verify_security_tests_gate treats like `external: true` for the trusted end.
+
+No findings for v5.4.2 (9f9d785) beyond FB-7, FB-8, FB-9 and FB-10. FB-9 and FB-10 were found on this pin on 2026-11-20, while writing the architecture. FB-7 and FB-8 were re-verified open on this pin on 2026-11-19: `gates/sup/scan_security_gate.py` is unchanged since v5.2.0, and the QUICKSTART step 8 Claude lines still load user hooks with `--setting-sources user`. FB-1 and FB-2 were filed as found on v2.1.2, not re-run on this pin.
 
 ### FB-8 — Claude session lines of QUICKSTART step 8 run the person's own hooks outside the declared rights
 
