@@ -71,6 +71,8 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
+No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (see its 2026-11-18 follow-up).
+
 ### FB-7 — Security gate accepts operational scanner errors and non-SARIF JSON objects
 
 - **Date:** 2026-11-12
@@ -92,6 +94,8 @@ than deleting one, so a missing answer stays visible.
 **Impact on this product** — Native OSV exit1 is not inherently COMMAND_FAILED: report severity decides. The upstream defect remains open. The owner-authorized temporary adapter now protects both declared scanner commands: operational/unsupported status or invalid/incomplete SARIF leaves no published results file and the real gate blocks SCAN_NOT_RUN. Valid original findings still reach its unchanged severity policy. No ||true, fabricated clean SARIF or local result override is used; independent re-review and checkpoint approval remain pending.
 
 **Workaround applied** — TEMPORARY, explicitly authorized by the owner on 2026-11-12; ADR-0003 compares waiting for upstream with this integration. Files: `tools/security/scan_fail_closed.py`, `tools/security/README.md`, `tools/security/vendor/sarif-schema-2.1.0.json`, `tools/security/vendor/README.md`, `tests/tooling/test_scan_fail_closed.py`, `docs/architecture/stack.yaml`, `.github/workflows/quality_gates.yml`, `.gitignore`, `docs/decisions/0003-temporary-fail-closed-scanner-integration.md`, the generated `docs/decisions/index.html`, `docs/architecture/stack-review.md`, and `docs/architecture/evidence/fail-closed-scanner-checks.json`. The adapter clears stale output, checks native status and the full vendored OASIS schema, retains private diagnostics, and publishes only exact validated original bytes. OSV accepts completed 0/1; Gitleaks uses native --exit-code3 (0/3) so partial/error exit1 cannot masquerade as completed findings. No .framework file, contract, gate or pin is modified. Removal: adopt an authorized released upstream correction, verify equivalent positive/negative regressions against it without the adapter, then remove the adapter/schema and temporary CI/tests and restore direct native commands in the same reviewed change. Keep this entry open until that evidence exists; no upstream issue, new release, bot approval or merge is claimed.
+
+**Follow-up (2026-11-18, framework bump to v5.2.0 @ 79dee183de85cdd0c308d5d4a62311d445f3b748)** — `git -C .framework diff --stat v4.0.0 v5.2.0 -- gates/sup/scan_security_gate.py` prints nothing: the gate is unchanged in v5.2.0, so this defect is not fixed upstream and the temporary adapter stays. `python3 -B -m unittest discover -s tests/tooling -p 'test_*.py'` ran 10 tests OK against the v5.2.0 pin. No other findings for v5.2.0 (79dee18) at stage 3; the v5 author/tester/coder session changes are not yet exercised by this product.
 
 ### FB-6 — Faro Cloud collector has no evidenced selectable public release version
 
