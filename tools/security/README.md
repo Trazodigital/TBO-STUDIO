@@ -82,13 +82,15 @@ implementation; missing prerequisites block rather than fabricate success.
 
 ## Removal
 
-Keep FB-7 **open**, with the workaround named. Report it upstream separately
-when authorized; no issue/PR or release is implied by this local work.
-After a released upstream version protects the same error/report cases:
+FB-7 was fixed upstream in v5.4.4, but on v5.4.9 the native gate still passes
+an empty `runs` list and a Gitleaks leak exit with zero results as clean scans
+(FB-11), so the adapter stays. After a released upstream version protects the
+same error/report cases:
 
 1. Review and authorize the submodule version change through a product PR.
-2. Run equivalent negative/positive regressions against the corrected gate
-   **without this adapter**, including both scanner exit contracts.
+2. Run `python3 -B tools/security/native_gate_regressions.py .`: the
+   adapter's negative/positive regressions against the native gate **without
+   this adapter**, including both scanner exit contracts. Every case must pass.
 3. Restore direct native scanner commands, remove the adapter, vendored schema
    and temporary CI/test integration together, and record the verified removal
    in FB-7. Do not remove protection merely because a release number increased.

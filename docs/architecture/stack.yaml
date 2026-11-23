@@ -200,6 +200,7 @@ areas:
   version_command: gitleaks version
   run: python3 -B tools/security/scan_fail_closed.py --scanner gitleaks --results reports/secrets.sarif
   results: reports/secrets.sarif
+  completed_exit_codes: [0, 3]
   purpose: 'Temporary FB-7 fail-closed adapter (ADR-0003). Native --exit-code 3 separates leaks from
     operational exit 1. Publish only validated original SARIF; preserve native status and private diagnostics.'
 - area: dependencies_scanner
@@ -208,6 +209,7 @@ areas:
   version_command: osv-scanner --version
   run: python3 -B tools/security/scan_fail_closed.py --scanner osv-scanner --results reports/dependencies.sarif
   results: reports/dependencies.sarif
+  completed_exit_codes: [0, 1]
   purpose: 'Temporary FB-7 fail-closed adapter (ADR-0003). Accept only completed exits 0/1 with valid,
     consistent original SARIF. No published report on operational/validation errors; gate blocks SCAN_NOT_RUN.'
 - area: build

@@ -11,6 +11,9 @@ context: >-
   gate. The owner explicitly authorized a local fail-closed adapter, regression
   tests and named feedback workaround, without changing .framework or its pin.
   This implementation authorization is not formal checkpoint 3 approval.
+  Framework v5.4.4 fixed FB-7 upstream (completed_exit_codes and a structural
+  SARIF check), but on v5.4.9 the native gate still passes an empty runs list
+  and a Gitleaks leak exit with zero results as clean scans (FB-11).
 options:
   - name: Wait for a released upstream correction before continuing
     pros:
@@ -37,8 +40,14 @@ consequences: >-
   Maintain regression tests through the actual unchanged gate and run them as
   product-owned CI steps without changing mandatory framework steps. Retain
   raw diagnostics privately under ignored .qf/security-scans. Record every file
-  and removal criteria in FB-7; keep it open until a released upstream fix is
-  adopted and equivalent regressions pass without the adapter. Upstream issue
+  and removal criteria in FB-7. Both scanner rows declare the native
+  completed_exit_codes (Gitleaks [0, 3], OSV [0, 1]); a rejected scan publishes
+  no report, so the gate still blocks SCAN_NOT_RUN. Keep the adapter until a
+  released upstream fix of FB-11 is adopted and the equivalent regressions,
+  including the empty-runs and exit/result-count cases, pass against the native
+  gate without it (tools/security/native_gate_regressions.py); then restore
+  the direct native commands and remove the adapter, its schema, tests and CI
+  steps in one reviewed change. Upstream issue
   publication, commit, push, merge, deployment and human checkpoint approval
   are not authorized by this record. No real scanner or provider run is claimed.
 ```
