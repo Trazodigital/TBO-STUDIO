@@ -1,8 +1,13 @@
 """Removal evidence for the temporary FB-7 adapter (ADR-0003): the adapter's
 regressions run against the unchanged native scan_security_gate of the pinned
 framework, with no adapter in the command. The adapter may go only when every
-case passes; on v5.4.9 the two FB-11 cases and the two malformed-results cases
-fail. Not a CI step: run it by hand when the framework pin moves.
+case passes; on v5.4.9 the two FB-11 cases fail. Not a CI step: run it by hand
+when the framework pin moves.
+
+Two cases, a `results` that is an object and a result that is a string, pass on
+SCAN_NOT_RUN or on a crash of the gate: the framework's runner reports a gate
+that raises as GATE_CRASHED, a failed gate, so CI fails closed there too
+(FB-11). Any other case that crashes fails.
 
 Builds a throwaway copy of the product (qf.yaml + stack.yaml, no git, so no run
 cache), rewrites only the two scanner rows to a stand-in scanner, and asserts the
@@ -73,7 +78,9 @@ if code[1] is None:
 sys.exit(code[1])
 '''
 
-# (case, gitleaks mode, osv mode, expected sorted rules)
+# (case, gitleaks mode, osv mode, expected sorted rules); CRASH_OR_NOT_RUN also
+# accepts a crash of the gate, which run_gates reports as GATE_CRASHED.
+CRASH_OR_NOT_RUN = "SCAN_NOT_RUN or GATE_CRASHED"
 CASES = [
     ("both clean", "clean", "clean", []),
     ("gitleaks operational exit 1 with a valid clean report", "operational-1-valid-report", "clean", ["SCAN_NOT_RUN"]),
@@ -94,8 +101,8 @@ CASES = [
     ("FB-11: gitleaks exit 3 (leaks) but zero results", "leak-exit-no-results", "clean", ["SCAN_NOT_RUN"]),
     ("FB-11: SARIF with no runs at all", "runs-empty", "clean", ["SCAN_NOT_RUN"]),
     ("gitleaks exit 0 (clean) but a leak result", "clean-exit-with-leak", "clean", ["SECURITY_FINDING"]),
-    ("results is an object, not a list", "results-not-a-list", "clean", ["SCAN_NOT_RUN"]),
-    ("a result is a string, not an object", "result-not-an-object", "clean", ["SCAN_NOT_RUN"]),
+    ("results is an object, not a list", "results-not-a-list", "clean", CRASH_OR_NOT_RUN),
+    ("a result is a string, not an object", "result-not-an-object", "clean", CRASH_OR_NOT_RUN),
 ]
 
 
@@ -140,12 +147,13 @@ def main() -> int:
             assert read_stack(config) is not None, "stack must validate, or the gate returns [] silently"
             try:
                 findings = check(config)
-            except Exception as error:  # a crash fails closed in CI (GATE_CRASHED), not as a finding
-                print(f"FAIL  {name}: gate crashed, {type(error).__name__}: {error}")
-                failures += 1
+            except Exception as error:  # run_gates reports it as GATE_CRASHED: fails closed
+                ok = expected == CRASH_OR_NOT_RUN
+                failures += not ok
+                print(f"{'PASS' if ok else 'FAIL'}  {name}: gate crashed, {type(error).__name__}: {error}")
                 continue
             rules = sorted(f.rule for f in findings)
-            ok = rules == sorted(expected)
+            ok = rules == (["SCAN_NOT_RUN"] if expected == CRASH_OR_NOT_RUN else sorted(expected))
             failures += not ok
             print(f"{'PASS' if ok else 'FAIL'}  {name}: {rules}")
             if not ok:

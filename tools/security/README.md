@@ -91,6 +91,10 @@ same error/report cases:
 2. Run `python3 -B tools/security/native_gate_regressions.py .`: the
    adapter's negative/positive regressions against the native gate **without
    this adapter**, including both scanner exit contracts. Every case must pass.
+   Two cases, a `results` that is an object and a result that is a string,
+   pass on `SCAN_NOT_RUN` or on a crash of the gate: the framework's runner
+   reports a gate that raises as `GATE_CRASHED`, a failed gate, so CI fails
+   closed there too. On v5.4.9 18 of 20 pass; the two FB-11 cases fail.
 3. Restore direct native scanner commands, remove the adapter, vendored schema
    and temporary CI/test integration together, and record the verified removal
    in FB-7. Do not remove protection merely because a release number increased.

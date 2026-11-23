@@ -2,7 +2,7 @@
 
 ```yaml decision
 id: ADR-0003
-title: Guard declared scanner reports until FB-7 is fixed upstream
+title: Guard declared scanner reports until the native gate rejects every regression case (FB-7, FB-11)
 status: proposed
 date: "2026-11-12"
 context: >-
@@ -39,16 +39,17 @@ consequences: >-
   --exit-code 3 to separate completed findings from its operational exit 1.
   Maintain regression tests through the actual unchanged gate and run them as
   product-owned CI steps without changing mandatory framework steps. Retain
-  raw diagnostics privately under ignored .qf/security-scans. Record every file
-  and removal criteria in FB-7. Both scanner rows declare the native
-  completed_exit_codes (Gitleaks [0, 3], OSV [0, 1]); a rejected scan publishes
-  no report, so the gate still blocks SCAN_NOT_RUN. Keep the adapter until a
-  released upstream fix of FB-11 is adopted and the equivalent regressions,
-  including the empty-runs and exit/result-count cases, pass against the native
-  gate without it (tools/security/native_gate_regressions.py); then restore
-  the direct native commands and remove the adapter, its schema, tests and CI
-  steps in one reviewed change. Upstream issue
-  publication, commit, push, merge, deployment and human checkpoint approval
+  raw diagnostics privately under ignored .qf/security-scans. FB-7 lists every
+  file of the adapter; FB-11 records the removal criterion. Both scanner rows
+  declare the native completed_exit_codes (Gitleaks [0, 3], OSV [0, 1]); a
+  rejected scan publishes no report, so the gate still blocks SCAN_NOT_RUN.
+  Keep the adapter until a released upstream fix of FB-11 is adopted and every
+  case of tools/security/native_gate_regressions.py, including the empty-runs
+  and exit/result-count cases, passes against the native gate without it (a
+  gate crash on malformed results counts, as CI reports it as GATE_CRASHED);
+  then restore the direct native commands and remove the adapter, its schema,
+  tests and CI steps in one reviewed change. Upstream issue publication,
+  commit, push, merge, deployment and human checkpoint approval
   are not authorized by this record. No real scanner or provider run is claimed.
 ```
 
