@@ -142,7 +142,9 @@ composition_root: src.api.lead
 
 ### frontend
 
-The browser application. Its budget holds the limits only it can see: one
+The browser application. It runs in the visitor's browser, which the product
+does not control, so it declares `runs_in: untrusted`: anyone can call what it
+calls. Its budget holds the limits only it can see: one
 credential request and one WSS attempt per explicit voice activation (REQ-0083,
 REQ-0088, REQ-0118) and the 10 s wait per submission attempt (REQ-0144). No
 bundle-size or load-time budget: no requirement sets one.
@@ -164,6 +166,7 @@ session count.
 id: frontend
 derived_from: tbo-capture#frontend
 role: component
+runs_in: untrusted
 name: Frontend
 responsibility: Guides the visitor through capture by form or voice, review of the brief and submission, holding the brief in local memory without commercial storage and sending the commercial request to the backend only after the visitor's explicit confirmation.
 budget:
@@ -190,11 +193,11 @@ One per edge of the diagram. Versions follow the approved stack and ADR-0002:
 the Gemini stack label v1-beta is sent on the wire as v1beta.
 
 **Browser-facing internal interfaces.** `token-request` and `lead-request` are
-internal (both ends are product components), yet their `from` end runs in the
-visitor's browser, which the product does not control: the diagram's trust
-boundary wraps only the backend. Both declare `input-validation` although
-verify_security_tests_gate checks external interfaces only; the reviewer holds
-them to it (create_security_tests_skill, *Not checkable*).
+internal (both ends are product components), yet their `from` end, the
+frontend, runs untrusted in the visitor's browser: the diagram's trust boundary
+wraps only the backend. Both cross that boundary and declare `input-validation`;
+from stage 5 on, verify_security_tests_gate requires a passing `@security` test
+for it at the trusted end, token-issuer and lead-submitter.
 
 **Gemini (token-source, voice-channel).** token-issuer locks every credential
 with `liveConnectConstraints` (model gemini-3.8-live, response modalities, the
@@ -250,9 +253,9 @@ declares it in its data, so another receiver needs a superseding record.
 
 **external-routing (lead-webhook → commercial-destination).** No product code
 runs on this edge: both ends are external, so verify_security_tests_gate finds
-no product end to test. It names `outbound-calls` because the schema requires
-a template on every external interface; its security rests on assumptions
-verified by configuration review, not by tests:
+no product end to test. It crosses no trust boundary of the product, so it
+names no security templates; its security rests on assumptions verified by
+configuration review, not by tests:
 
 - the spreadsheet is shared only with the commercial team;
 - the script runs as the owner and is deployed from script version 1;
@@ -351,7 +354,6 @@ to: commercial-destination
 external: true
 protocol: Apps Script write to Google Sheets, inside Google
 data: the delivered lead as a sheet row
-security_templates: [outbound-calls]
 implementations:
   real: Google Sheets spreadsheet written by the Apps Script receiver
   double: {kind: stub, name: "none: no product code reaches this edge; verified by configuration review"}
@@ -402,7 +404,7 @@ implementations:
 ## Threats
 
 STRIDE for every external interface, and for the two internal interfaces whose
-`from` end runs in the visitor's browser. **Test** names the product end and
+`from` end, the frontend, runs untrusted in the visitor's browser. **Test** names the product end and
 the template its test is marked with, `@security[<template>]`; *config* means
 verified by configuration review, with no product test; *TLS* means covered by
 the transport of the platform or SDK, with no test of its own.

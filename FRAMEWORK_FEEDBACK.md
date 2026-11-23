@@ -71,27 +71,46 @@ than deleting one, so a missing answer stays visible.
 
 <!-- Newest first. -->
 
+### FB-11 — Security gate still passes a SARIF log with no runs, and a leak exit with zero results, as clean scans
+
+- **Date:** 2026-11-22
+- **Framework version:** v5.4.9 @ 538d78ddc05b221e730aa9f736283916bc6eb194
+- **Status:** reported
+- **Issue:** https://github.com/alexxo/ASPICE_agent/issues/13
+
+**Impact on this product** — The temporary FB-7 adapter (ADR-0003) stays: it rejects an empty `runs` list (`tools/security/scan_fail_closed.py:58`) and an exit that disagrees with the result count (`:92`), so neither report is published and the native gate blocks `SCAN_NOT_RUN`. The adapter's 10 regression tests pass on v5.4.9. Its retirement waits for a fix of this entry.
+
+**Workaround applied** — The FB-7 adapter, unchanged, now behind the native `completed_exit_codes` of both rows of `docs/architecture/stack.yaml`; added `tools/security/native_gate_regressions.py`, the removal evidence ADR-0003 asks for. Remove both with the adapter once every case passes without it. A fix upstream could require a nonempty `runs` list, and a result count that agrees with the exit for the scanners whose exit says whether they found something.
+
+**Follow-up (2026-11-22, review of PR #20)** — The crash on a malformed `results` (an object, or a result that is a string) is accepted as fail-closed, not as part of this entry's defect: `agent/run_gates_tool.py` reports a gate that raises as `GATE_CRASHED`, a failed gate, so CI blocks; verified by running `run_gates` on such a copy (`fail`, `GATE_CRASHED`). `tools/security/native_gate_regressions.py` counts a crash or `SCAN_NOT_RUN` as a pass for those two cases and any other crash as a failure: 18 of 20 pass on v5.4.9, and the two that fail are the empty `runs` list and the leak exit with zero results. So a fix of this entry meets the whole removal condition of ADR-0003. The issue filed upstream is not changed.
+
+No findings for v5.4.9 (538d78d) beyond FB-11. Verified on this pin on 2026-11-22: FB-7 fixed in v5.4.4, except the edges of FB-11; FB-8 fixed in v5.4.4, as QUICKSTART step 8 now turns hooks off on every Claude line; FB-9 and FB-10 fixed in v5.4.6, as `check_design_contract_gate` reports `MISSING_SECURITY_TEMPLATES` for `token-request` without its template, and `TEMPLATES_WITHOUT_BOUNDARY` for `external-routing` with one or for the frontend without `runs_in: untrusted`. The changes of v5.4.3, v5.4.5, v5.4.7 and v5.4.8 (gate caching, cost monitoring, test-first and run keys) are not yet exercised by this product at stage 4.
+
 ### FB-10 — An external interface between two external actors must name a security template that no gate can require
 
 - **Date:** 2026-11-20
 - **Framework version:** v5.4.2 @ 9f9d785b52f0b7be4e66e47dd2cee99c32dcd791
-- **Status:** reported
+- **Status:** fixed upstream in v5.4.6
 - **Issue:** https://github.com/alexxo/ASPICE_agent/issues/9
 
 **Impact on this product** — `external-routing` names `outbound-calls` to satisfy the schema, and a placeholder test double (`stub` named "none: no product code reaches this edge"); the architecture states that no product code runs there and that its security rests on assumptions verified by configuration review. No test was invented.
 
 **Workaround applied** — `docs/architecture/architecture.md`, interface `external-routing`: the `outbound-calls` template and the placeholder double, with prose saying what both do and do not mean. A fix upstream could allow `security_templates` to be empty or absent when neither end is a component.
 
+**Follow-up (2026-11-22, framework bump to v5.4.9 @ 538d78d)** — The schema no longer requires templates on an external interface, and `check_design_contract_gate` reports one naming templates across no trust boundary (`TEMPLATES_WITHOUT_BOUNDARY`), verified by putting `outbound-calls` back on a copy. Workaround removed: `external-routing` names no `security_templates`, and its prose says it crosses no trust boundary of the product. Its `stub` double stays, as every interface declares its implementations.
+
 ### FB-9 — A component running in the visitor's browser makes an internal interface a trust boundary the framework cannot express
 
 - **Date:** 2026-11-20
 - **Framework version:** v5.4.2 @ 9f9d785b52f0b7be4e66e47dd2cee99c32dcd791
-- **Status:** reported
+- **Status:** fixed upstream in v5.4.6
 - **Issue:** https://github.com/alexxo/ASPICE_agent/issues/10
 
 **Impact on this product** — `token-request` and `lead-request` declare `input-validation`, and the architecture's STRIDE tables cover them; their tests are held by the reviewer, not by a gate.
 
 **Workaround applied** — none. A fix upstream could add a per-component `runs_in: untrusted` (or a trust-boundary mark on the interface) that verify_security_tests_gate treats like `external: true` for the trusted end.
+
+**Follow-up (2026-11-22, framework bump to v5.4.9 @ 538d78d)** — The frontend declares `runs_in: untrusted`, so `token-request` and `lead-request` cross a trust boundary and, from stage 5 on, `verify_security_tests_gate` requires a passing `@security[input-validation]` test at token-issuer and lead-submitter, no longer held by the reviewer alone. Verified on a copy: without the template `check_design_contract_gate` reports `MISSING_SECURITY_TEMPLATES`.
 
 No findings for v5.4.2 (9f9d785) beyond FB-7, FB-8, FB-9 and FB-10. FB-9 and FB-10 were found on this pin on 2026-11-20, while writing the architecture. FB-7 and FB-8 were re-verified open on this pin on 2026-11-19: `gates/sup/scan_security_gate.py` is unchanged since v5.2.0, and the QUICKSTART step 8 Claude lines still load user hooks with `--setting-sources user`. FB-1 and FB-2 were filed as found on v2.1.2, not re-run on this pin.
 
@@ -99,12 +118,14 @@ No findings for v5.4.2 (9f9d785) beyond FB-7, FB-8, FB-9 and FB-10. FB-9 and FB-
 
 - **Date:** 2026-11-19
 - **Framework version:** v5.2.0 @ 79dee183de85cdd0c308d5d4a62311d445f3b748
-- **Status:** reported
+- **Status:** fixed upstream in v5.4.4
 - **Issue:** https://github.com/alexxo/ASPICE_agent/issues/5
 
 **Impact on this product** — The upgrade review of PR #12 stopped and needed a diagnosis; its approval, from the session whose copy changed, stayed valid for `qf/merge` and PR #12 was merged on it (9120f75). The hook touched only `.atl/` in the copy, not the PR's content.
 
 **Workaround applied** — Local, outside the repository: `--settings '{"disableAllHooks":true}'` added to every `QF_COMMAND_TO_START_*` line of the product's `.env` and of `~/.aspice_agent_secrets/.env`. Remove it once the step 8 lines neutralise user hooks upstream. No framework file, gate or pin is changed.
+
+**Follow-up (2026-11-22, framework bump to v5.4.9 @ 538d78d)** — QUICKSTART step 8 now adds `--settings '{"disableAllHooks":true}'` to every Claude line, the same flag as the local workaround, which so stays as the prescribed line rather than a workaround; the watcher also withdraws an approval from a reviewer whose copy changed. The person confirms the flag on every line of both `.env` files; the agent does not read them.
 
 No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (its 2026-11-18 follow-up, now in alexxo/ASPICE_agent#6: `gates/sup/scan_security_gate.py` unchanged since v4.0.0 and the 10 `tests/tooling` tests passing), and FB-8 above.
 
@@ -112,12 +133,14 @@ No findings for v5.2.0 (79dee18) beyond FB-7, re-verified open on this pin (its 
 
 - **Date:** 2026-11-12
 - **Framework version:** v4.0.0 @ 71110564c658ba39fd255e9f5368c0d16ffe7e60
-- **Status:** reported
+- **Status:** fixed upstream in v5.4.4
 - **Issue:** https://github.com/alexxo/ASPICE_agent/issues/6
 
 **Impact on this product** — Native OSV exit1 is not inherently COMMAND_FAILED: report severity decides. The upstream defect remains open. The owner-authorized temporary adapter now protects both declared scanner commands: operational/unsupported status or invalid/incomplete SARIF leaves no published results file and the real gate blocks SCAN_NOT_RUN. Valid original findings still reach its unchanged severity policy. No ||true, fabricated clean SARIF or local result override is used; independent re-review and checkpoint approval remain pending.
 
 **Workaround applied** — TEMPORARY, explicitly authorized by the owner on 2026-11-12; ADR-0003 compares waiting for upstream with this integration. Files: `tools/security/scan_fail_closed.py`, `tools/security/README.md`, `tools/security/vendor/sarif-schema-2.1.0.json`, `tools/security/vendor/README.md`, `tests/tooling/test_scan_fail_closed.py`, `docs/architecture/stack.yaml`, `.github/workflows/quality_gates.yml`, `.gitignore`, `docs/decisions/0003-temporary-fail-closed-scanner-integration.md`, the generated `docs/decisions/index.html`, `docs/architecture/stack-review.md`, and `docs/architecture/evidence/fail-closed-scanner-checks.json`. The adapter clears stale output, checks native status and the full vendored OASIS schema, retains private diagnostics, and publishes only exact validated original bytes. OSV accepts completed 0/1; Gitleaks uses native --exit-code3 (0/3) so partial/error exit1 cannot masquerade as completed findings. No .framework file, contract, gate or pin is modified. Removal: adopt an authorized released upstream correction, verify equivalent positive/negative regressions against it without the adapter, then remove the adapter/schema and temporary CI/tests and restore direct native commands in the same reviewed change. Keep the adapter until that evidence exists; the defect is reported upstream as alexxo/ASPICE_agent#6, with no new release, bot approval or merge claimed.
+
+**Follow-up (2026-11-22, framework bump to v5.4.9 @ 538d78d)** — v5.4.4 checks the exit against each row's `completed_exit_codes` and requires a SARIF 2.1.0 version and runs naming their tool. The 15 regressions of this entry pass against the native gate without the adapter (`tools/security/native_gate_regressions.py`), but an empty `runs` list and a leak exit with zero results still pass as clean: filed separately as FB-11. The adapter stays, now with `completed_exit_codes` on both rows ([0, 3] Gitleaks, [0, 1] OSV), and the 10 `tests/tooling` tests pass on v5.4.9. Its removal waits for FB-11 (ADR-0003).
 
 ### FB-6 — Faro Cloud collector has no evidenced selectable public release version
 
