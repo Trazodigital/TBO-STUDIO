@@ -144,12 +144,16 @@ Official OSV documentation distinguishes 0 (packages, no findings), 1
 result-related errors and 129–255 for non-result errors. Do not describe 2 as
 OSV's general-error code.
 
-The framework's `scan_security_gate` validates the scanner version, then judges
-the report rather than `run.exit_code`. High/critical (score >=7.0) and unscored
-results block. A medium 6.9 finding can pass even when the scanner exits 1.
-Missing or unreadable JSON produces `SCAN_NOT_RUN`. `run_command` removes old
-matching reports before each fresh command, so the fixture below is not a
-stale-file demonstration.
+Before framework 5.4.4 (FB-7), the framework's `scan_security_gate` validated
+the scanner version, then judged the report rather than `run.exit_code`, and
+only missing or unreadable JSON produced `SCAN_NOT_RUN`. Since 5.4.4 an exit
+outside the row's `completed_exit_codes` is `SCAN_NOT_RUN`, and so is any report
+that is not SARIF 2.1.0 whose runs name their tool (see *Framework v5.4.9*
+below). Among completed scans the severity policy is unchanged: high/critical
+(score >=7.0) and unscored results block, and a medium 6.9 finding can pass
+even when the scanner exits 1. `run_command` removes old matching reports
+before each fresh command, so the fixture below is not a stale-file
+demonstration.
 
 An isolated execution of the **real gate**, with fresh synthetic scanner
 processes (not a patched gate, not real OSV), produced:
@@ -175,8 +179,7 @@ The owner authorized an adapter outside `.framework`, now invoked by **both**
 scanner rows. It checks native status, validates the complete vendored OASIS
 SARIF 2.1.0 schema plus execution/result consistency, and atomically publishes
 only the original bytes. Any operational or validation error withholds the
-configured results file, so the unchanged gate reports `SCAN_NOT_RUN` even
-though it ignores command status. Diagnostics/raw data stay privately under
+configured results file, so the gate reports `SCAN_NOT_RUN`. Diagnostics/raw data stay privately under
 ignored `.qf/security-scans/`, outside the gate's results paths.
 
 OSV completed 0/1 remains unchanged. Reserved statuses are rejected until
@@ -197,9 +200,24 @@ provider access. Neither remote CI success nor native-binary verification is
 claimed by this local evidence.
 
 See [contract, limits, primary sources and removal criteria](../../tools/security/README.md).
-FB-7 remains **open upstream**; the exception mitigates the selected integration
-only. Its acceptance still requires independent re-review and human checkpoint
-approval. No upstream issue/PR was opened by implementing this workaround.
+
+### Framework v5.4.9: native exit check, adapter kept (FB-11)
+
+Framework 5.4.4 fixed FB-7 upstream: each scanner row now declares its
+`completed_exit_codes`, any other exit is `SCAN_NOT_RUN`, and the report must
+be SARIF 2.1.0 whose runs name their tool. Both rows declare them, Gitleaks
+`[0, 3]` and OSV `[0, 1]`, the same completed exits the adapter already
+accepted; this is the only change to `stack.yaml` since checkpoint 3 was
+approved in #10. The adapter exits with the native status, or 2 when it
+rejects a scan whose native exit was 0 or not an exit code, and withholds the
+report whenever it rejects a scan, so a rejected scan still blocks
+`SCAN_NOT_RUN`.
+
+The adapter stays: on v5.4.9 the native gate still passes an empty `runs` list
+and a Gitleaks leak exit with zero results as clean scans (FB-11, filed
+upstream). `tools/security/native_gate_regressions.py` runs the regressions
+against the native gate without the adapter: 18 of 20 pass, and the two
+failures are FB-11's. The adapter goes once every case passes (ADR-0003).
 
 Reproduce the version grammar without installation:
 
@@ -253,8 +271,9 @@ The latest results and official generated table are refreshed after each change:
 
 Historical `stack-checks.json` retains the rejected literal 24.x/v1beta and
 missing-version fixtures; those are not the current proposed rows. The
-scanner assurance finding FB-7 remains open upstream, with the local mitigation
-and repository-tooling tests recorded in ADR-0003. No scanner installation,
+scanner assurance finding FB-7 was fixed upstream in 5.4.4; its remaining edges
+are FB-11, with the local mitigation and repository-tooling tests recorded in
+ADR-0003. No scanner installation,
 migrated application build, real provider verification, application component/
 test implementation or deployment is claimed. Publication is separately
 owner-authorized; it does not approve the checkpoint or authorize merge.
