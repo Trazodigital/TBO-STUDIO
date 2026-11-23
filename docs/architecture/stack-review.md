@@ -144,12 +144,16 @@ Official OSV documentation distinguishes 0 (packages, no findings), 1
 result-related errors and 129–255 for non-result errors. Do not describe 2 as
 OSV's general-error code.
 
-The framework's `scan_security_gate` validates the scanner version, then judges
-the report rather than `run.exit_code`. High/critical (score >=7.0) and unscored
-results block. A medium 6.9 finding can pass even when the scanner exits 1.
-Missing or unreadable JSON produces `SCAN_NOT_RUN`. `run_command` removes old
-matching reports before each fresh command, so the fixture below is not a
-stale-file demonstration.
+Before framework 5.4.4 (FB-7), the framework's `scan_security_gate` validated
+the scanner version, then judged the report rather than `run.exit_code`, and
+only missing or unreadable JSON produced `SCAN_NOT_RUN`. Since 5.4.4 an exit
+outside the row's `completed_exit_codes` is `SCAN_NOT_RUN`, and so is any report
+that is not SARIF 2.1.0 whose runs name their tool (see *Framework v5.4.9*
+below). Among completed scans the severity policy is unchanged: high/critical
+(score >=7.0) and unscored results block, and a medium 6.9 finding can pass
+even when the scanner exits 1. `run_command` removes old matching reports
+before each fresh command, so the fixture below is not a stale-file
+demonstration.
 
 An isolated execution of the **real gate**, with fresh synthetic scanner
 processes (not a patched gate, not real OSV), produced:
@@ -204,8 +208,9 @@ Framework 5.4.4 fixed FB-7 upstream: each scanner row now declares its
 be SARIF 2.1.0 whose runs name their tool. Both rows declare them, Gitleaks
 `[0, 3]` and OSV `[0, 1]`, the same completed exits the adapter already
 accepted; this is the only change to `stack.yaml` since checkpoint 3 was
-approved in #10. The adapter still exits with the native status, and withholds
-the report when it rejects a scan, so a rejected completed exit still blocks
+approved in #10. The adapter exits with the native status, or 2 when it
+rejects a scan whose native exit was 0 or not an exit code, and withholds the
+report whenever it rejects a scan, so a rejected scan still blocks
 `SCAN_NOT_RUN`.
 
 The adapter stays: on v5.4.9 the native gate still passes an empty `runs` list
